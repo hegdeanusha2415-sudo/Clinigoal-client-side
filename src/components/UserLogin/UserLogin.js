@@ -14,6 +14,7 @@ function Login() {
 
   const navigate = useNavigate();
 
+  const API_BASE_URL = "https://clinigoal-server-side.onrender.com";
   // Handle field input
   const handleChange = (e, type) => {
     const { name, value } = e.target;

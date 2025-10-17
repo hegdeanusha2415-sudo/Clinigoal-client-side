@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
+import API_BASE_URL from "../apiConfig"; // ✅ Centralized API base URL
 import "./AdminCourseManagement.css";
 
 function AdminCourseManagement() {
@@ -15,14 +16,14 @@ function AdminCourseManagement() {
   const [editCourseId, setEditCourseId] = useState(null);
   const [expandedCourse, setExpandedCourse] = useState(null);
 
-  // ✅ Fetch courses from backend
+  // ✅ Fetch all courses
   const fetchCourses = async () => {
     try {
-      const res = await axios.get("/api/courses");
+      const res = await axios.get(`${API_BASE_URL}/api/courses`);
       setCourses(res.data || []);
     } catch (err) {
-      console.error("Error fetching courses:", err);
-      alert("Failed to load courses. Check server connection.");
+      console.error("❌ Error fetching courses:", err);
+      alert("Failed to load courses. Please check your backend connection.");
     }
   };
 
@@ -30,12 +31,13 @@ function AdminCourseManagement() {
     fetchCourses();
   }, []);
 
-  // ✅ Add new quiz field dynamically
-  const handleAddQuizField = () =>
+  // ✅ Add new quiz field
+  const handleAddQuizField = () => {
     setQuizzes([
       ...quizzes,
       { question: "", options: ["", "", "", ""], correctOption: 0, image: null },
     ]);
+  };
 
   // ✅ Handle quiz change
   const handleQuizChange = (e, index, optionIndex = null) => {
@@ -55,7 +57,7 @@ function AdminCourseManagement() {
   const handleVideoChange = (e) => setVideos([...e.target.files]);
   const handleNoteChange = (e) => setNotes([...e.target.files]);
 
-  // ✅ Add / Update Course
+  // ✅ Add / Update course
   const handleSubmit = async (e) => {
     e.preventDefault();
 
@@ -81,13 +83,12 @@ function AdminCourseManagement() {
 
     try {
       if (editMode) {
-        await axios.put(`/api/courses/${editCourseId}`,
-          formData,
-          { headers: { "Content-Type": "multipart/form-data" } }
-        );
+        await axios.put(`${API_BASE_URL}/api/courses/${editCourseId}`, formData, {
+          headers: { "Content-Type": "multipart/form-data" },
+        });
         alert("✅ Course updated successfully!");
       } else {
-        await axios.post("/api/courses", formData, {
+        await axios.post(`${API_BASE_URL}/api/courses`, formData, {
           headers: { "Content-Type": "multipart/form-data" },
         });
         alert("✅ Course added successfully!");
@@ -104,8 +105,8 @@ function AdminCourseManagement() {
       setEditCourseId(null);
       fetchCourses();
     } catch (err) {
-      console.error("Error saving course:", err.response?.data || err.message);
-      alert("❌ Failed to save course. See console for details.");
+      console.error("❌ Error saving course:", err.response?.data || err.message);
+      alert("Failed to save course. Please check console for details.");
     } finally {
       setLoading(false);
     }
@@ -122,17 +123,16 @@ function AdminCourseManagement() {
   const handleDelete = async (id) => {
     if (!window.confirm("Are you sure you want to delete this course?")) return;
     try {
-      await axios.delete(`/api/courses/${id}`);
-
+      await axios.delete(`${API_BASE_URL}/api/courses/${id}`);
       alert("🗑️ Course deleted successfully!");
       fetchCourses();
     } catch (err) {
-      console.error("Error deleting:", err);
-      alert("❌ Failed to delete course.");
+      console.error("❌ Error deleting course:", err);
+      alert("Failed to delete course. Check server logs.");
     }
   };
 
-  // ✅ Toggle view
+  // ✅ Toggle course view
   const toggleView = (id) => {
     setExpandedCourse(expandedCourse === id ? null : id);
   };
@@ -164,28 +164,14 @@ function AdminCourseManagement() {
 
         <div className="form-group">
           <label>Upload Videos</label>
-          <input
-            type="file"
-            multiple
-            accept="video/*"
-            onChange={handleVideoChange}
-          />
-          {videos.length > 0 && (
-            <p className="file-count">{videos.length} video(s) selected</p>
-          )}
+          <input type="file" multiple accept="video/*" onChange={handleVideoChange} />
+          {videos.length > 0 && <p>{videos.length} video(s) selected</p>}
         </div>
 
         <div className="form-group">
           <label>Upload Notes</label>
-          <input
-            type="file"
-            multiple
-            accept=".pdf,.doc,.docx"
-            onChange={handleNoteChange}
-          />
-          {notes.length > 0 && (
-            <p className="file-count">{notes.length} note(s) selected</p>
-          )}
+          <input type="file" multiple accept=".pdf,.doc,.docx" onChange={handleNoteChange} />
+          {notes.length > 0 && <p>{notes.length} note(s) selected</p>}
         </div>
 
         <div className="form-group quiz-section">
@@ -229,11 +215,7 @@ function AdminCourseManagement() {
               />
             </div>
           ))}
-          <button
-            type="button"
-            onClick={handleAddQuizField}
-            className="add-quiz-btn"
-          >
+          <button type="button" onClick={handleAddQuizField} className="add-quiz-btn">
             + Add Quiz
           </button>
         </div>
@@ -261,28 +243,18 @@ function AdminCourseManagement() {
               <div className="course-header">
                 <h4>{course.courseName}</h4>
                 <p>
-                  {course.videos?.length || 0} videos |{" "}
-                  {course.notes?.length || 0} notes
+                  {course.videos?.length || 0} videos | {course.notes?.length || 0} notes
                 </p>
               </div>
 
               <div className="button-group">
-                <button
-                  onClick={() => toggleView(course._id)}
-                  className="view-btn"
-                >
+                <button onClick={() => toggleView(course._id)} className="view-btn">
                   {expandedCourse === course._id ? "👁️ Hide" : "👁️ View"}
                 </button>
-                <button
-                  onClick={() => handleEdit(course)}
-                  className="edit-btn"
-                >
+                <button onClick={() => handleEdit(course)} className="edit-btn">
                   ✏️ Edit
                 </button>
-                <button
-                  onClick={() => handleDelete(course._id)}
-                  className="delete-btn"
-                >
+                <button onClick={() => handleDelete(course._id)} className="delete-btn">
                   🗑️ Delete
                 </button>
               </div>

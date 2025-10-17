@@ -24,7 +24,7 @@ function AdminDashboard() {
   // ----------------- FETCH DATA -----------------
   const fetchCourses = async () => {
     try {
-      const res = await axios.get("/api/courses");
+const res = await axios.get(`${API_BASE_URL}/courses`);
       setCourses(res.data);
     } catch (err) {
       console.error("Error fetching courses:", err);
