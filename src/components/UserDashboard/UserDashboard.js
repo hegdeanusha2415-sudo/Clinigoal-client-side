@@ -82,7 +82,7 @@ function UserDashboard({ user }) {
   const handleSaveProfile = async () => {
     try {
       const res = await axios.put(
-        `http://localhost:5000/api/users/${USER_ID}/profile`,
+        `https://clinigoal-server-side.onrender.com/api/users/${USER_ID}/profile`,
         profile
       );
       setProfile(res.data);
@@ -309,7 +309,7 @@ function UserDashboard({ user }) {
                           user={{ id: USER_ID, name: USER_NAME }}
                           onVideoComplete={async () => {
                             await axios.put(
-                              `http://localhost:5000/api/payments/${payment._id}/progress`,
+                              `https://clinigoal-server-side.onrender.com/api/payments/${payment._id}/progress`,
                               { "progress.videoWatched": true }
                             );
                             fetchEnrolledPayments();

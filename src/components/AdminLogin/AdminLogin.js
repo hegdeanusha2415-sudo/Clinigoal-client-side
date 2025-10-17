@@ -64,14 +64,14 @@ function AdminLogin() {
     try {
       if (forgotStep === 2) {
         const res = await axios.post(
-          "http://localhost:5000/api/admin/forgot-password/send-otp",
+          "https://clinigoal-server-side.onrender.com/api/admin/forgot-password/send-otp",
           { email: forgotData.email }
         );
         setMessage(res.data.message);
         setForgotStep(3);
       } else if (forgotStep === 3) {
         const res = await axios.post(
-          "http://localhost:5000/api/admin/forgot-password/verify-otp",
+          "https://clinigoal-server-side.onrender.com/api/admin/forgot-password/verify-otp",
           {
             email: forgotData.email,
             otp: forgotData.otp,
@@ -81,7 +81,7 @@ function AdminLogin() {
         setForgotStep(4);
       } else if (forgotStep === 4) {
         const res = await axios.post(
-          "http://localhost:5000/api/admin/forgot-password/reset",
+          "https://clinigoal-server-side.onrender.com/api/admin/forgot-password/reset",
           {
             email: forgotData.email,
             newPassword: forgotData.newPassword,
