@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import AdminCourseManagement from "./AdminCourseManagement";
 
+const API_BASE_URL = "https://clinigoal-server-side.onrender.com";
 import {
   BarChart, Bar, XAxis, YAxis, Tooltip, Legend,
   PieChart, Pie, Cell, LineChart, Line, CartesianGrid,
