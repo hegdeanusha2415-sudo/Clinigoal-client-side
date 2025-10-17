@@ -2,8 +2,8 @@ import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import AdminCourseManagement from "./AdminCourseManagement";
+import API_BASE_URL from "../apiConfig"; // ✅ Added centralized config import
 
-const API_BASE_URL = "https://clinigoal-server-side.onrender.com";
 import {
   BarChart, Bar, XAxis, YAxis, Tooltip, Legend,
   PieChart, Pie, Cell, LineChart, Line, CartesianGrid,
@@ -25,7 +25,7 @@ function AdminDashboard() {
   // ----------------- FETCH DATA -----------------
   const fetchCourses = async () => {
     try {
-const res = await axios.get(`${API_BASE_URL}/courses`);
+      const res = await axios.get(`${API_BASE_URL}/api/courses`); // ✅ Updated
       setCourses(res.data);
     } catch (err) {
       console.error("Error fetching courses:", err);
@@ -34,8 +34,7 @@ const res = await axios.get(`${API_BASE_URL}/courses`);
 
   const fetchUsers = async () => {
     try {
-      const res = await axios.get("/api/users");
-
+      const res = await axios.get(`${API_BASE_URL}/api/users`); // ✅ Updated
       setUsers(res.data);
     } catch (err) {
       console.error("Error fetching users:", err);
@@ -44,7 +43,7 @@ const res = await axios.get(`${API_BASE_URL}/courses`);
 
   const fetchPayments = async () => {
     try {
-      const res = await axios.get("/api/payments");
+      const res = await axios.get(`${API_BASE_URL}/api/payments`); // ✅ Updated
 
       const paymentsWithDetails = res.data.map((p) => {
         const user = users.find((u) => u._id === p.userId);
@@ -63,8 +62,7 @@ const res = await axios.get(`${API_BASE_URL}/courses`);
 
   const fetchReviews = async () => {
     try {
-const res = await axios.get("/api/reviews");
-
+      const res = await axios.get(`${API_BASE_URL}/api/reviews`); // ✅ Updated
       setReviews(res.data);
     } catch (err) {
       console.error("Error fetching reviews:", err);
@@ -73,7 +71,7 @@ const res = await axios.get("/api/reviews");
 
   const fetchQuizMarks = async () => {
     try {
-const res = await axios.get("/api/quizmarks");
+      const res = await axios.get(`${API_BASE_URL}/api/quizmarks`); // ✅ Updated
       setQuizMarks(res.data);
     } catch (err) {
       console.error("Error fetching quiz marks:", err);
@@ -82,7 +80,7 @@ const res = await axios.get("/api/quizmarks");
 
   const fetchCertificates = async () => {
     try {
-const res = await axios.get("/api/certificates");
+      const res = await axios.get(`${API_BASE_URL}/api/certificates`); // ✅ Updated
       setCertificates(res.data);
     } catch (err) {
       console.error("Error fetching certificates:", err);
@@ -114,8 +112,7 @@ const res = await axios.get("/api/certificates");
   // ----------------- APPROVE / REJECT / PENDING -----------------
   const handlePaymentAction = async (paymentId, newStatus) => {
     try {
-     await axios.post("/api/payments/updateStatus",{
-
+      await axios.post(`${API_BASE_URL}/api/payments/updateStatus`, { // ✅ Updated
         paymentId,
         status: newStatus,
       });
