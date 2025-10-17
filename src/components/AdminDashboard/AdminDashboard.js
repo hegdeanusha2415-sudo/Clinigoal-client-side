@@ -60,6 +60,7 @@ function AdminDashboard() {
   const fetchReviews = async () => {
     try {
       const res = await axios.get("https://clinigoal-server-side.onrender.com/api/reviews");
+
       setReviews(res.data);
     } catch (err) {
       console.error("Error fetching reviews:", err);
