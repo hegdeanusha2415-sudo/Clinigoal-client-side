@@ -44,14 +44,14 @@ function Login() {
     try {
       if (forgotStep === 1) {
         // Send OTP
-        const res = await axios.post("http://localhost:5000/api/forgot-password/send-otp", {
+        const res = await axios.post("https://clinigoal-backend.onrender.com/api/forgot-password/send-otp", {
           email: forgotData.email,
         });
         setMessage(res.data.message);
         setForgotStep(2);
       } else if (forgotStep === 2) {
         // Verify OTP
-        const res = await axios.post("http://localhost:5000/api/forgot-password/verify-otp", {
+        const res = await axios.post("https://clinigoal-backend.onrender.com/api/forgot-password/verify-otp", {
           email: forgotData.email,
           otp: forgotData.otp,
         });
@@ -59,7 +59,7 @@ function Login() {
         setForgotStep(3);
       } else if (forgotStep === 3) {
         // Reset Password
-        const res = await axios.post("http://localhost:5000/api/forgot-password/reset", {
+        const res = await axios.post("https://clinigoal-backend.onrender.com/api/forgot-password/reset", {
           email: forgotData.email,
           newPassword: forgotData.newPassword,
         });

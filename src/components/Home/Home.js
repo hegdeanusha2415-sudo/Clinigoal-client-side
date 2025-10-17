@@ -270,18 +270,30 @@ function HomePage() {
           <nav className="main-nav">
             <div className="nav-item">
               <a href="#" onClick={() => toggleDropdown("about")}>About</a>
+              {activeDropdown === "about" && (
+                <div className="dropdown">
+                  <a href="#" onClick={() => setActiveDropdown(null)}>Our Team</a>
+                  <a href="#" onClick={() => setActiveDropdown(null)}>Mission</a>
+                  <a href="#" onClick={() => setActiveDropdown(null)}>History</a>
+                </div>
+              )}
             </div>
-
 
             <div className="nav-item">
               <a href="#" onClick={() => toggleDropdown("courses")}>Courses</a>
-             
+              {activeDropdown === "courses" && (
+                <div className="dropdown">
+                  {programs.slice(0, 4).map(p => (
+                     <Link key={p.id} to={`/program/${p.id}`} onClick={() => setActiveDropdown(null)}>{p.title}</Link>
+                  ))}
+                </div>
+              )}
             </div>
             
-          
+            {/* These items are hidden by CSS but maintained in structure */}
             
             <div className="nav-item">
-              <a href="#" onClick={() => toggleDropdown("contact")}>Contact</a>
+              <a href="#" onClick={() => toggleDropdown("resources")}>Contact</a>
               
                 
             </div>
@@ -535,21 +547,6 @@ function HomePage() {
               <li><a href="/pharmacovigilance">Pharmacovigilance</a></li>
             </ul>
           </div>
-// Inside <header className="clean-header"> ... </header>
-
-<nav className="main-nav">
-  <div className="nav-item">
-    <Link to="/about">About</Link>
-  </div>
-
-  <div className="nav-item">
-    <Link to="/programs">Courses</Link>
-  </div>
-
-  <div className="nav-item">
-    <Link to="/contact">Contact</Link>
-  </div>
-</nav>
 
           {/* Company */}
           <div className="footer-column">

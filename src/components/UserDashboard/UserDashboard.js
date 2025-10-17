@@ -24,7 +24,7 @@ function UserDashboard({ user }) {
   useEffect(() => {
     const fetchCourses = async () => {
       try {
-        const res = await axios.get("http://localhost:5000/api/courses");
+        const res = await axios.get("https://clinigoal-backend.onrender.com/api/courses");
         setCourses(res.data);
       } catch (err) {
         console.error(err);
@@ -37,7 +37,7 @@ function UserDashboard({ user }) {
   const fetchEnrolledCourses = async () => {
     try {
       // ✅ Corrected endpoint: use query param
-      const res = await axios.get(`http://localhost:5000/api/payments?userId=${USER_ID}`);
+      const res = await axios.get(`https://clinigoal-backend.onrender.com/api/payments?userId=${USER_ID}`);
       // Only approved payments
       setEnrolledCourses(res.data.filter(p => p.status === "Approved").map((p) => p.courseId));
     } catch (err) {
@@ -52,7 +52,7 @@ function UserDashboard({ user }) {
   // ----------------- FETCH REVIEWS -----------------
   const fetchReviews = async () => {
     try {
-      const res = await axios.get("http://localhost:5000/api/reviews");
+      const res = await axios.get("https://clinigoal-backend.onrender.com/api/reviews");
       setReviews(res.data);
     } catch (err) {
       console.error(err);
@@ -90,7 +90,7 @@ function UserDashboard({ user }) {
 
         try {
           // Save payment as Pending in backend
-          await axios.post("http://localhost:5000/api/payments", {
+          await axios.post("https://clinigoal-backend.onrender.com/api/payments", {
             userId: USER_ID,
             courseId,
             amount: 100,
@@ -122,7 +122,7 @@ function UserDashboard({ user }) {
     if (!name || !text || rating === 0) return alert("Fill all fields!");
     const newReview = { name, text, rating };
     try {
-      await axios.post("http://localhost:5000/api/reviews", newReview);
+      await axios.post("https://clinigoal-backend.onrender.com/api/reviews", newReview);
       setReviews([newReview, ...reviews]);
       setName("");
       setText("");

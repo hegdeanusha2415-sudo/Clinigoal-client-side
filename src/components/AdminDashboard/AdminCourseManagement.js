@@ -58,7 +58,7 @@ function AdminCourseManagement() {
 
     setLoading(true);
     try {
-      const res = await axios.post("http://localhost:5000/api/courses", formData, {
+      const res = await axios.post("https://clinigoal-server-side.onrender.com", formData, {
         headers: { "Content-Type": "multipart/form-data" },
       });
       alert("Course added successfully!");

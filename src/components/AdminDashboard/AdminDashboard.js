@@ -3,9 +3,10 @@ import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import AdminCourseManagement from "./AdminCourseManagement";
-import { 
-  BarChart, Bar, XAxis, YAxis, Tooltip, Legend, 
-  PieChart, Pie, Cell, LineChart, Line, CartesianGrid 
+import {
+  BarChart, Bar, XAxis, YAxis, Tooltip, Legend,
+  PieChart, Pie, Cell, LineChart, Line, CartesianGrid,
+  ResponsiveContainer, AreaChart, Area
 } from "recharts";
 import "./AdminDashboard.css";
 
@@ -23,7 +24,7 @@ function AdminDashboard() {
   // ----------------- FETCH DATA -----------------
   const fetchCourses = async () => {
     try {
-      const res = await axios.get("http://localhost:5000/api/courses");
+      const res = await axios.get("https://clinigoal-server-side.onrender.com/api/courses");
       setCourses(res.data);
     } catch (err) {
       console.error("Error fetching courses:", err);
@@ -32,7 +33,7 @@ function AdminDashboard() {
 
   const fetchUsers = async () => {
     try {
-      const res = await axios.get("http://localhost:5000/api/users");
+      const res = await axios.get("https://clinigoal-server-side.onrender.com/api/users");
       setUsers(res.data);
     } catch (err) {
       console.error("Error fetching users:", err);
@@ -41,7 +42,7 @@ function AdminDashboard() {
 
   const fetchPayments = async () => {
     try {
-      const res = await axios.get("http://localhost:5000/api/payments/all");
+      const res = await axios.get("https://clinigoal-server-side.onrender.com/api/payments/all");
       const paymentsWithDetails = res.data.map((p) => {
         const user = users.find((u) => u._id === p.userId);
         const course = courses.find((c) => c._id === p.courseId);
@@ -55,7 +56,7 @@ function AdminDashboard() {
 
   const fetchReviews = async () => {
     try {
-      const res = await axios.get("http://localhost:5000/api/reviews");
+      const res = await axios.get("https://clinigoal-server-side.onrender.com/api/reviews");
       setReviews(res.data);
     } catch (err) {
       console.error("Error fetching reviews:", err);
@@ -64,7 +65,7 @@ function AdminDashboard() {
 
   const fetchQuizMarks = async () => {
     try {
-      const res = await axios.get("http://localhost:5000/api/quizmarks");
+      const res = await axios.get("https://clinigoal-server-side.onrender.com/api/quizmarks");
       setQuizMarks(res.data);
     } catch (err) {
       console.error("Error fetching quiz marks:", err);
@@ -73,7 +74,7 @@ function AdminDashboard() {
 
   const fetchCertificates = async () => {
     try {
-      const res = await axios.get("http://localhost:5000/api/certificates");
+      const res = await axios.get("https://clinigoal-server-side.onrender.com/api/certificates");
       setCertificates(res.data);
     } catch (err) {
       console.error("Error fetching certificates:", err);
@@ -102,17 +103,18 @@ function AdminDashboard() {
     if (window.confirm("Do you really want to logout?")) navigate("/");
   };
 
-  // ----------------- PAYMENT ACTION -----------------
-  const handlePaymentAction = async (paymentId, action) => {
+  // ----------------- APPROVE / REJECT / REVOKE -----------------
+  const handlePaymentAction = async (paymentId, newStatus) => {
     try {
-      await axios.post("http://localhost:5000/api/payments/approve", { paymentId, action });
+      await axios.post("https://clinigoal-server-side.onrender.com/api/payments/updateStatus", {
+        paymentId,
+        status: newStatus,
+      });
       setPayments((prev) =>
-        prev.map((p) =>
-          p._id === paymentId ? { ...p, status: action } : p
-        )
+        prev.map((p) => (p._id === paymentId ? { ...p, status: newStatus } : p))
       );
     } catch (err) {
-      console.error(`Error updating payment (${action}):`, err);
+      console.error(`Error updating payment (${newStatus}):`, err);
     }
   };
 
@@ -120,18 +122,24 @@ function AdminDashboard() {
   const pendingPaymentsCount = payments.filter((p) => p.status === "Pending").length;
 
   // ----------------- ANALYTICS DATA -----------------
-  const studentCourseData = [
+  const summaryData = [
     { name: "Students", value: users.length },
-    { name: "Courses Completed", value: courses.filter((c) => c.completed).length },
+    { name: "Courses", value: courses.length },
+    { name: "Payments", value: payments.length },
   ];
 
   const paymentData = [
-    { name: "Pending", value: payments.filter(p => p.status === "Pending").length },
-    { name: "Approved", value: payments.filter(p => p.status === "Approved").length },
+    { name: "Pending", value: pendingPaymentsCount },
+    { name: "Approved", value: payments.filter((p) => p.status === "Approved").length },
+    { name: "Rejected", value: payments.filter((p) => p.status === "Rejected").length },
   ];
 
-  const ratingData = reviews.map((r, index) => ({ name: `R${index + 1}`, rating: r.rating }));
-  const COLORS = ["#fd7e14", "#28a745"];
+  const ratingData = reviews.map((r, i) => ({
+    name: `Review ${i + 1}`,
+    rating: r.rating,
+  }));
+
+  const COLORS = ["#FFB703", "#06D6A0", "#EF476F"];
 
   return (
     <div className="admin-dashboard">
@@ -141,7 +149,7 @@ function AdminDashboard() {
         <p className="online-status">● Online</p>
         <ul className="menu">
           {[
-            "dashboard", "approval", "payments", "courses", "reviews", 
+            "dashboard", "approval", "payments", "courses", "reviews",
             "analytics", "certificates", "quizmarks", "settings"
           ].map((tab) => (
             <li
@@ -205,46 +213,34 @@ function AdminDashboard() {
                 <thead>
                   <tr>
                     <th>Student</th>
-                    <th>Email</th>
                     <th>Course</th>
-                    <th>Transaction ID</th>
-                    <th>Date & Time</th>
                     <th>Amount</th>
                     <th>Status</th>
-                    <th>Action</th>
+                    <th>Actions</th>
                   </tr>
                 </thead>
                 <tbody>
                   {payments.map((p) => (
                     <tr key={p._id}>
                       <td>{p.user?.name || "Student"}</td>
-                      <td>{p.user?.email || "-"}</td>
                       <td>{p.course?.courseName || "Course"}</td>
-                      <td>{p.transactionId || "-"}</td>
-                      <td>{new Date(p.createdAt).toLocaleString()}</td>
                       <td>₹{p.amount}</td>
-                      <td>
-                        <span
-                          className={`badge-status ${
-                            p.status === "Pending"
-                              ? "badge-pending"
-                              : p.status === "Approved"
-                              ? "badge-approved"
-                              : "badge-rejected"
-                          }`}
-                        >
-                          {p.status}
-                        </span>
-                      </td>
+                      <td>{p.status}</td>
                       <td>
                         {p.status === "Pending" && (
                           <>
-                            <button className="approve-btn" onClick={() => handlePaymentAction(p._id, "Approved")}>Approve</button>
-                            <button className="reject-btn" onClick={() => handlePaymentAction(p._id, "Rejected")}>Reject</button>
+                            <button className="approve-btn" onClick={() => handlePaymentAction(p._id, "Approved")}>
+                              Approve
+                            </button>
+                            <button className="reject-btn" onClick={() => handlePaymentAction(p._id, "Rejected")}>
+                              Reject
+                            </button>
                           </>
                         )}
                         {p.status === "Approved" && (
-                          <button className="revoke-btn" onClick={() => handlePaymentAction(p._id, "Pending")}>Revoke</button>
+                          <button className="revoke-btn" onClick={() => handlePaymentAction(p._id, "Pending")}>
+                            Revoke
+                          </button>
                         )}
                       </td>
                     </tr>
@@ -263,10 +259,7 @@ function AdminDashboard() {
               <thead>
                 <tr>
                   <th>Student</th>
-                  <th>Email</th>
                   <th>Course</th>
-                  <th>Transaction ID</th>
-                  <th>Date & Time</th>
                   <th>Amount</th>
                   <th>Status</th>
                 </tr>
@@ -275,23 +268,10 @@ function AdminDashboard() {
                 {payments.map((p) => (
                   <tr key={p._id}>
                     <td>{p.user?.name || "Student"}</td>
-                    <td>{p.user?.email || "-"}</td>
                     <td>{p.course?.courseName || "Course"}</td>
-                    <td>{p.transactionId || "-"}</td>
-                    <td>{new Date(p.createdAt).toLocaleString()}</td>
                     <td>₹{p.amount}</td>
-                    <td>
-                      <span
-                        className={`badge-status ${
-                          p.status === "Pending"
-                            ? "badge-pending"
-                            : p.status === "Approved"
-                            ? "badge-approved"
-                            : "badge-rejected"
-                        }`}
-                      >
-                        {p.status === "Approved" ? "Paid" : p.status}
-                      </span>
+                    <td style={{ color: p.status === "Approved" ? "green" : p.status === "Rejected" ? "red" : "orange" }}>
+                      {p.status}
                     </td>
                   </tr>
                 ))}
@@ -317,7 +297,7 @@ function AdminDashboard() {
                 <div className="review-item" key={i}>
                   <h4>{r.name}</h4>
                   <div className="rating">
-                    {[1,2,3,4,5].map(s => (
+                    {[1, 2, 3, 4, 5].map(s => (
                       <span key={s} style={{ color: s <= r.rating ? "#f59e0b" : "#ccc" }}>★</span>
                     ))}
                   </div>
@@ -328,40 +308,68 @@ function AdminDashboard() {
           </div>
         )}
 
-        {/* Analytics */}
+        {/* ✅ Improved Analytics */}
         {activeTab === "analytics" && (
           <div className="content-section">
-            <h2>Analytics 📊</h2>
+            <h2>Analytics Dashboard 📊</h2>
             <div className="analytics-grid">
-              <div className="analytics-card">
-                <h3>Students vs Courses Completed</h3>
-                <BarChart width={350} height={250} data={studentCourseData}>
-                  <XAxis dataKey="name" />
-                  <YAxis />
-                  <Tooltip />
-                  <Legend />
-                  <Bar dataKey="value" fill="#2a5298" />
-                </BarChart>
+              <div className="analytics-card large">
+                <h3>Platform Summary</h3>
+                <ResponsiveContainer width="100%" height={300}>
+                  <BarChart data={summaryData}>
+                    <CartesianGrid strokeDasharray="3 3" />
+                    <XAxis dataKey="name" />
+                    <YAxis />
+                    <Tooltip />
+                    <Legend />
+                    <Bar dataKey="value" fill="#2a9d8f" radius={[8, 8, 0, 0]} />
+                  </BarChart>
+                </ResponsiveContainer>
               </div>
-              <div className="analytics-card">
-                <h3>Payment Status</h3>
-                <PieChart width={350} height={250}>
-                  <Pie data={paymentData} dataKey="value" nameKey="name" cx="50%" cy="50%" outerRadius={80} label>
-                    {COLORS.map((color, index) => <Cell key={index} fill={color} />)}
-                  </Pie>
-                  <Tooltip />
-                </PieChart>
+
+              <div className="analytics-card medium">
+                <h3>Payment Distribution</h3>
+                <ResponsiveContainer width="100%" height={300}>
+                  <PieChart>
+                    <Pie
+                      data={paymentData}
+                      cx="50%"
+                      cy="50%"
+                      innerRadius={60}
+                      outerRadius={90}
+                      paddingAngle={5}
+                      dataKey="value"
+                      label
+                    >
+                      {paymentData.map((entry, i) => (
+                        <Cell key={i} fill={COLORS[i % COLORS.length]} />
+                      ))}
+                    </Pie>
+                    <Tooltip />
+                    <Legend verticalAlign="bottom" height={36} />
+                  </PieChart>
+                </ResponsiveContainer>
               </div>
-              <div className="analytics-card">
-                <h3>Student Ratings</h3>
-                <LineChart width={350} height={250} data={ratingData}>
-                  <CartesianGrid strokeDasharray="3 3" />
-                  <XAxis dataKey="name" />
-                  <YAxis domain={[0,5]} />
-                  <Tooltip />
-                  <Legend />
-                  <Line type="monotone" dataKey="rating" stroke="#6f42c1" activeDot={{ r: 8 }} />
-                </LineChart>
+
+              <div className="analytics-card large">
+                <h3>Student Ratings Trend</h3>
+                <ResponsiveContainer width="100%" height={300}>
+                  <AreaChart data={ratingData}>
+                    <defs>
+                      <linearGradient id="colorRating" x1="0" y1="0" x2="0" y2="1">
+                        <stop offset="5%" stopColor="#6f42c1" stopOpacity={0.8} />
+                        <stop offset="95%" stopColor="#6f42c1" stopOpacity={0} />
+                      </linearGradient>
+                    </defs>
+                    <CartesianGrid strokeDasharray="3 3" />
+                    <XAxis dataKey="name" />
+                    <YAxis domain={[0, 5]} />
+                    <Tooltip />
+                    <Legend />
+                    <Area type="monotone" dataKey="rating" stroke="#6f42c1" fillOpacity={1} fill="url(#colorRating)" />
+                    <Line type="monotone" dataKey="rating" stroke="#007bff" strokeWidth={2} dot={{ r: 4 }} />
+                  </AreaChart>
+                </ResponsiveContainer>
               </div>
             </div>
           </div>
