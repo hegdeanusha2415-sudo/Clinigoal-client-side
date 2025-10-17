@@ -82,13 +82,13 @@ function AdminCourseManagement() {
     try {
       if (editMode) {
         await axios.put(
-          `http://localhost:5000/api/courses/${editCourseId}`,
+          `https://clinigoal-server-side.onrender.com/api/courses/${editCourseId}`,
           formData,
           { headers: { "Content-Type": "multipart/form-data" } }
         );
         alert("✅ Course updated successfully!");
       } else {
-        await axios.post("http://localhost:5000/api/courses", formData, {
+        await axios.post("https://clinigoal-server-side.onrender.com/api/courses", formData, {
           headers: { "Content-Type": "multipart/form-data" },
         });
         alert("✅ Course added successfully!");
@@ -123,7 +123,7 @@ function AdminCourseManagement() {
   const handleDelete = async (id) => {
     if (!window.confirm("Are you sure you want to delete this course?")) return;
     try {
-      await axios.delete(`http://localhost:5000/api/courses/${id}`);
+      await axios.delete(`https://clinigoal-server-side.onrender.com/api/courses/${id}`);
       alert("🗑️ Course deleted successfully!");
       fetchCourses();
     } catch (err) {
