@@ -39,7 +39,7 @@ function UserDashboard({ user }) {
   useEffect(() => {
     const fetchCourses = async () => {
       try {
-        const res = await axios.get("https://clinigoal-server-side.onrender.com/api/courses");
+const res = await axios.get(`${API_BASE_URL}/api/courses`);
         setCourses(res.data);
       } catch (err) {
         console.error(err);
@@ -51,9 +51,8 @@ function UserDashboard({ user }) {
   // ----------------- FETCH ENROLLED PAYMENTS -----------------
   const fetchEnrolledPayments = async () => {
     try {
-      const res = await axios.get(
-        `https://clinigoal-server-side.onrender.com/api/payments?userId=${USER_ID}`
-      );
+      const res = await axios.get(`${API_BASE_URL}/api/payments?userId=${USER_ID}`);
+
       setEnrolledPayments(res.data);
     } catch (err) {
       console.error(err);
@@ -67,7 +66,7 @@ function UserDashboard({ user }) {
   // ----------------- FETCH REVIEWS -----------------
   const fetchReviews = async () => {
     try {
-      const res = await axios.get("https://clinigoal-server-side.onrender.com/api/reviews");
+const res = await axios.get(`${API_BASE_URL}/api/reviews`);
       setReviews(res.data);
     } catch (err) {
       console.error(err);
@@ -82,7 +81,7 @@ function UserDashboard({ user }) {
   const handleSaveProfile = async () => {
     try {
       const res = await axios.put(
-        `https://clinigoal-server-side.onrender.com/api/users/${USER_ID}/profile`,
+  `${API_BASE_URL}/api/users/${USER_ID}/profile`,
         profile
       );
       setProfile(res.data);
@@ -118,7 +117,7 @@ function UserDashboard({ user }) {
       handler: async function (response) {
         const paymentId = response.razorpay_payment_id || "TEST123";
         try {
-          await axios.post("https://clinigoal-server-side.onrender.com/api/payments", {
+          await axios.post(`${API_BASE_URL}/api/payments`, {
             userId: USER_ID,
             courseId,
             amount: 100,
@@ -148,12 +147,11 @@ function UserDashboard({ user }) {
   // ----------------- QUIZ SUBMISSION -----------------
   const handleQuizSubmit = async (courseId, paymentId) => {
     try {
-      await axios.post("https://clinigoal-server-side.onrender.com/api/quizzes/submit", {
+      await axios.post(`${API_BASE_URL}/api/quizzes/submit`, {
         userId: USER_ID,
         courseId,
       });
-      await axios.put(
-        `https://clinigoal-server-side.onrender.com/api/payments/${paymentId}/progress`,
+      await axios.put(`${API_BASE_URL}/api/payments/${paymentId}/progress`,
         { "progress.completed": true }
       );
       alert("🎉 Quiz submitted! Certificate unlocked!");
@@ -170,7 +168,7 @@ function UserDashboard({ user }) {
     if (!name || !text || rating === 0) return alert("Fill all fields!");
     const newReview = { name, text, rating };
     try {
-      await axios.post("https://clinigoal-server-side.onrender.com/api/reviews", newReview);
+await axios.post(`${API_BASE_URL}/api/reviews`, newReview);
       setReviews([newReview, ...reviews]);
       setName("");
       setText("");

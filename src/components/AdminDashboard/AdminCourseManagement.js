@@ -18,7 +18,7 @@ function AdminCourseManagement() {
   // ✅ Fetch courses from backend
   const fetchCourses = async () => {
     try {
-      const res = await axios.get("https://clinigoal-server-side.onrender.com/api/courses");
+      const res = await axios.get("/api/courses");
       setCourses(res.data || []);
     } catch (err) {
       console.error("Error fetching courses:", err);
@@ -81,14 +81,13 @@ function AdminCourseManagement() {
 
     try {
       if (editMode) {
-        await axios.put(
-          `https://clinigoal-server-side.onrender.com/api/courses/${editCourseId}`,
+        await axios.put(`/api/courses/${editCourseId}`,
           formData,
           { headers: { "Content-Type": "multipart/form-data" } }
         );
         alert("✅ Course updated successfully!");
       } else {
-        await axios.post("https://clinigoal-server-side.onrender.com/api/courses", formData, {
+        await axios.post("/api/courses", formData, {
           headers: { "Content-Type": "multipart/form-data" },
         });
         alert("✅ Course added successfully!");
@@ -123,7 +122,8 @@ function AdminCourseManagement() {
   const handleDelete = async (id) => {
     if (!window.confirm("Are you sure you want to delete this course?")) return;
     try {
-      await axios.delete(`https://clinigoal-server-side.onrender.com/api/courses/${id}`);
+      await axios.delete(`/api/courses/${id}`);
+
       alert("🗑️ Course deleted successfully!");
       fetchCourses();
     } catch (err) {

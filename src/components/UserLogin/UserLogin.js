@@ -29,13 +29,13 @@ function Login() {
 
     try {
       if (type === "Login") {
-        const res = await axios.post("https://clinigoal-server-side.onrender.com/api/user/login", loginData);
+  const res = await axios.post(`${API_BASE_URL}/api/user/login`, loginData);
         if (res.data.success || res.status === 200) {
           alert("Login successful!");
           navigate("/user-dashboard");
         }
       } else if (type === "Register") {
-        const res = await axios.post("https://clinigoal-server-side.onrender.com/api/user/register", registerData);
+  const res = await axios.post(`${API_BASE_URL}/api/user/register`, registerData);
         if (res.data.success || res.status === 200) {
           alert("Registration successful! Redirecting to login...");
           setTimeout(() => setCurrentForm("login"), 800);
@@ -50,20 +50,19 @@ function Login() {
   const handleForgot = async () => {
     try {
       if (forgotStep === 1) {
-        const res = await axios.post("https://clinigoal-server-side.onrender.com/api/forgot-password/send-otp", {
-          email: forgotData.email,
+const res = await axios.post(`${API_BASE_URL}/api/forgot-password/send-otp`, {
+            email: forgotData.email,
         });
         setMessage(res.data.message);
         setForgotStep(2);
       } else if (forgotStep === 2) {
-        const res = await axios.post("https://clinigoal-server-side.onrender.com/api/forgot-password/verify-otp", {
-          email: forgotData.email,
+const res = await axios.post(`${API_BASE_URL}/api/forgot-password/verify-otp`, {          email: forgotData.email,
           otp: forgotData.otp,
         });
         setMessage(res.data.message);
         setForgotStep(3);
       } else if (forgotStep === 3) {
-        const res = await axios.post("https://clinigoal-server-side.onrender.com/api/forgot-password/reset", {
+        const res = await axios.post(`${API_BASE_URL}/api/forgot-password/reset`,{
           email: forgotData.email,
           newPassword: forgotData.newPassword,
         });

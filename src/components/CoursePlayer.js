@@ -9,6 +9,9 @@ export default function CoursePlayer({ course, user }) {
   const [paymentApproved, setPaymentApproved] = useState(false);
   const [loading, setLoading] = useState(true);
 
+  // ✅ Base API URL (auto-switches between local and production)
+  const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "https://clinigoal-backend.onrender.com/api";
+
   useEffect(() => {
     fetchPaymentAndProgress();
   }, []);
@@ -16,9 +19,14 @@ export default function CoursePlayer({ course, user }) {
   const fetchPaymentAndProgress = async () => {
     try {
       setLoading(true);
-      // Check if user payment is approved
-      const paymentRes = await axios.get(`https://clinigoal-backend.onrender.com/api/payments?userId=${user.id}`);
-      const approved = paymentRes.data.some((p) => p.courseId === course._id && p.status === "Approved");
+      // ✅ Check if user payment is approved
+      const paymentRes = await axios.get(`${API_BASE_URL}/payments`, {
+        params: { userId: user.id },
+      });
+
+      const approved = paymentRes.data.some(
+        (p) => p.courseId === course._id && p.status === "Approved"
+      );
       setPaymentApproved(approved);
 
       if (!approved) {
@@ -27,16 +35,19 @@ export default function CoursePlayer({ course, user }) {
         return;
       }
 
-      // Fetch progress
-      const res = await axios.get(`https://clinigoal-backend.onrender.com/api/progress?userId=${user.id}&courseId=${course._id}`);
+      // ✅ Fetch progress
+      const res = await axios.get(`${API_BASE_URL}/progress`, {
+        params: { userId: user.id, courseId: course._id },
+      });
       setProgress(res.data);
 
-      // Determine next step
+      // ✅ Determine next step
       if (res.data?.certificateGenerated) setCurrentStep("certificate");
       else if (res.data?.quizAttempts?.length > 0) setCurrentStep("quiz");
       else if (res.data?.assignmentSubmitted) setCurrentStep("quiz");
       else if (res.data?.notesViewed) setCurrentStep("assignment");
-      else if (res.data?.videosWatched?.length === course.videos.length) setCurrentStep("notes");
+      else if (res.data?.videosWatched?.length === course.videos.length)
+        setCurrentStep("notes");
       else setCurrentStep("videos");
 
       setLoading(false);
@@ -47,47 +58,74 @@ export default function CoursePlayer({ course, user }) {
     }
   };
 
+  // ✅ Video Completion
   const handleVideoComplete = async () => {
     const videoId = course.videos[currentVideoIndex]._id;
-    await axios.post("https://clinigoal-backend.onrender.com/api/progress/video", { userId: user.id, courseId: course._id, videoId });
 
-    if (currentVideoIndex + 1 < course.videos.length) setCurrentVideoIndex(currentVideoIndex + 1);
+    await axios.post(`${API_BASE_URL}/progress/video`, {
+      userId: user.id,
+      courseId: course._id,
+      videoId,
+    });
+
+    if (currentVideoIndex + 1 < course.videos.length)
+      setCurrentVideoIndex(currentVideoIndex + 1);
     else setCurrentStep("notes");
+
     fetchPaymentAndProgress();
   };
 
+  // ✅ Notes Viewed
   const handleNotesViewed = async () => {
-    await axios.post("https://clinigoal-backend.onrender.com/api/progress/notes", { userId: user.id, courseId: course._id });
+    await axios.post(`${API_BASE_URL}/progress/notes`, {
+      userId: user.id,
+      courseId: course._id,
+    });
     setCurrentStep("assignment");
     fetchPaymentAndProgress();
   };
 
+  // ✅ Assignment Submit
   const handleAssignmentSubmit = async () => {
-    await axios.post("http://localhost:5000/api/progress/assignment", { userId: user.id, courseId: course._id });
+    await axios.post(`${API_BASE_URL}/progress/assignment`, {
+      userId: user.id,
+      courseId: course._id,
+    });
     setCurrentStep("quiz");
     fetchPaymentAndProgress();
   };
 
+  // ✅ Quiz Submit
   const handleQuizSubmit = async () => {
-    const score = parseInt(prompt("Enter your quiz score (0-100):")); // for demo
-    const res = await axios.post("http://localhost:5000/api/progress/quiz", { userId: user.id, courseId: course._id, score });
+    const score = parseInt(prompt("Enter your quiz score (0-100):")); // demo only
+    const res = await axios.post(`${API_BASE_URL}/progress/quiz`, {
+      userId: user.id,
+      courseId: course._id,
+      score,
+    });
+
     if (res.data.passed) {
-      alert("Quiz Passed! Generating certificate...");
-      const certRes = await axios.post("http://localhost:5000/api/progress/certificate", { userId: user.id, courseId: course._id });
+      alert("✅ Quiz Passed! Generating certificate...");
+      const certRes = await axios.post(`${API_BASE_URL}/progress/certificate`, {
+        userId: user.id,
+        courseId: course._id,
+      });
       setCertificateUrl(certRes.data.certificateUrl);
       setCurrentStep("certificate");
     } else if (res.data.remainingAttempts > 0) {
-      alert(`Failed! Remaining attempts: ${res.data.remainingAttempts}`);
+      alert(`❌ Failed! Remaining attempts: ${res.data.remainingAttempts}`);
     } else {
-      alert("No attempts left. Quiz failed.");
+      alert("🚫 No attempts left. Quiz failed.");
     }
     fetchPaymentAndProgress();
   };
 
+  // ✅ UI States
   if (loading) return <p>Loading...</p>;
-
-  if (currentStep === "awaitingApproval") return <p>✅ Payment received. Awaiting admin approval to access this course.</p>;
-  if (currentStep === "error") return <p>❌ Error loading course. Please try again later.</p>;
+  if (currentStep === "awaitingApproval")
+    return <p>✅ Payment received. Awaiting admin approval to access this course.</p>;
+  if (currentStep === "error")
+    return <p>❌ Error loading course. Please try again later.</p>;
 
   return (
     <div>
@@ -95,7 +133,9 @@ export default function CoursePlayer({ course, user }) {
 
       {currentStep === "videos" && (
         <div>
-          <h3>Video {currentVideoIndex + 1} / {course.videos.length}</h3>
+          <h3>
+            Video {currentVideoIndex + 1} / {course.videos.length}
+          </h3>
           <video
             width="600"
             controls
@@ -130,7 +170,9 @@ export default function CoursePlayer({ course, user }) {
       {currentStep === "certificate" && (
         <div>
           <h3>Certificate</h3>
-          <a href={certificateUrl} target="_blank" rel="noreferrer">Download Certificate</a>
+          <a href={certificateUrl} target="_blank" rel="noreferrer">
+            Download Certificate
+          </a>
         </div>
       )}
     </div>

@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import AdminCourseManagement from "./AdminCourseManagement";
+
 import {
   BarChart, Bar, XAxis, YAxis, Tooltip, Legend,
   PieChart, Pie, Cell, LineChart, Line, CartesianGrid,
@@ -23,7 +24,7 @@ function AdminDashboard() {
   // ----------------- FETCH DATA -----------------
   const fetchCourses = async () => {
     try {
-      const res = await axios.get("https://clinigoal-server-side.onrender.com/api/courses");
+      const res = await axios.get("/api/courses");
       setCourses(res.data);
     } catch (err) {
       console.error("Error fetching courses:", err);
@@ -32,7 +33,8 @@ function AdminDashboard() {
 
   const fetchUsers = async () => {
     try {
-      const res = await axios.get("https://clinigoal-server-side.onrender.com/api/users");
+      const res = await axios.get("/api/users");
+
       setUsers(res.data);
     } catch (err) {
       console.error("Error fetching users:", err);
@@ -41,7 +43,8 @@ function AdminDashboard() {
 
   const fetchPayments = async () => {
     try {
-      const res = await axios.get("https://clinigoal-server-side.onrender.com/api/payments/all");
+      const res = await axios.get("/api/payments");
+
       const paymentsWithDetails = res.data.map((p) => {
         const user = users.find((u) => u._id === p.userId);
         const course = courses.find((c) => c._id === p.courseId);
@@ -59,7 +62,7 @@ function AdminDashboard() {
 
   const fetchReviews = async () => {
     try {
-      const res = await axios.get("https://clinigoal-server-side.onrender.com/api/reviews");
+const res = await axios.get("/api/reviews");
 
       setReviews(res.data);
     } catch (err) {
@@ -69,7 +72,7 @@ function AdminDashboard() {
 
   const fetchQuizMarks = async () => {
     try {
-      const res = await axios.get("https://clinigoal-server-side.onrender.com/api/quizmarks");
+const res = await axios.get("/api/quizmarks");
       setQuizMarks(res.data);
     } catch (err) {
       console.error("Error fetching quiz marks:", err);
@@ -78,7 +81,7 @@ function AdminDashboard() {
 
   const fetchCertificates = async () => {
     try {
-      const res = await axios.get("https://clinigoal-server-side.onrender.com/api/certificates");
+const res = await axios.get("/api/certificates");
       setCertificates(res.data);
     } catch (err) {
       console.error("Error fetching certificates:", err);
@@ -110,7 +113,8 @@ function AdminDashboard() {
   // ----------------- APPROVE / REJECT / PENDING -----------------
   const handlePaymentAction = async (paymentId, newStatus) => {
     try {
-      await axios.post("https://clinigoal-server-side.onrender.com/api/payments/updateStatus", {
+     await axios.post("/api/payments/updateStatus",{
+
         paymentId,
         status: newStatus,
       });

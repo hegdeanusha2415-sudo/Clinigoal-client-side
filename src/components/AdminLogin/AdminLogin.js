@@ -21,6 +21,11 @@ function AdminLogin() {
 
   const navigate = useNavigate();
 
+  // ✅ Base API URL (configurable for dev/prod)
+  const API_BASE_URL =
+    import.meta.env.VITE_API_BASE_URL ||
+    "https://clinigoal-backend.onrender.com/api";
+
   // ----------------- Handlers -----------------
   const handleLoginChange = (e) => {
     const { name, value } = e.target;
@@ -38,40 +43,63 @@ function AdminLogin() {
   };
 
   // ----------------- Login -----------------
-  const handleLoginSubmit = (e) => {
+  const handleLoginSubmit = async (e) => {
     e.preventDefault();
-    if (loginData.email && loginData.password) {
+    try {
+      if (!loginData.email || !loginData.password)
+        return alert("Please enter valid credentials!");
+
+      // ✅ Call login API
+      const res = await axios.post(`${API_BASE_URL}/admin/login`, loginData);
       alert("✅ Admin logged in successfully!");
+      console.log("Login response:", res.data);
+
       setLoginData({ email: "", password: "" });
       navigate("/admin-dashboard");
-    } else alert("Please enter valid credentials!");
+    } catch (error) {
+      alert(error.response?.data?.message || "Login failed. Try again.");
+    }
   };
 
   // ----------------- Create Admin -----------------
-  const handleCreateSubmit = (e) => {
+  const handleCreateSubmit = async (e) => {
     e.preventDefault();
     if (createData.password !== createData.confirmPassword) {
       alert("Passwords do not match!");
       return;
     }
-    alert(`Admin account created for: ${createData.email}`);
-    setCreateData({ email: "", password: "", confirmPassword: "" });
-    setIsCreating(false);
+    try {
+      // ✅ Call admin registration API
+      const res = await axios.post(`${API_BASE_URL}/admin/register`, {
+        email: createData.email,
+        password: createData.password,
+      });
+
+      alert(`✅ Admin account created for: ${createData.email}`);
+      console.log("Admin registered:", res.data);
+
+      setCreateData({ email: "", password: "", confirmPassword: "" });
+      setIsCreating(false);
+    } catch (err) {
+      alert(err.response?.data?.message || "Error creating admin account.");
+    }
   };
 
   // ----------------- Forgot Password OTP Flow -----------------
   const handleForgotSubmit = async () => {
     try {
       if (forgotStep === 2) {
+        // ✅ Step 1: Send OTP
         const res = await axios.post(
-          "https://clinigoal-server-side.onrender.com/api/admin/forgot-password/send-otp",
+          `${API_BASE_URL}/admin/forgot-password/send-otp`,
           { email: forgotData.email }
         );
         setMessage(res.data.message);
         setForgotStep(3);
       } else if (forgotStep === 3) {
+        // ✅ Step 2: Verify OTP
         const res = await axios.post(
-          "https://clinigoal-server-side.onrender.com/api/admin/forgot-password/verify-otp",
+          `${API_BASE_URL}/admin/forgot-password/verify-otp`,
           {
             email: forgotData.email,
             otp: forgotData.otp,
@@ -80,8 +108,9 @@ function AdminLogin() {
         setMessage(res.data.message);
         setForgotStep(4);
       } else if (forgotStep === 4) {
+        // ✅ Step 3: Reset Password
         const res = await axios.post(
-          "https://clinigoal-server-side.onrender.com/api/admin/forgot-password/reset",
+          `${API_BASE_URL}/admin/forgot-password/reset`,
           {
             email: forgotData.email,
             newPassword: forgotData.newPassword,
@@ -104,8 +133,7 @@ function AdminLogin() {
           alt="Clinic illustration"
           className="login-image"
         />
-        </div>
-      
+      </div>
 
       <div
         className={`admin-login-right ${
