@@ -18,7 +18,7 @@ function AdminCourseManagement() {
   // ✅ Fetch courses from backend
   const fetchCourses = async () => {
     try {
-      const res = await axios.get("http://localhost:5000/api/courses");
+      const res = await axios.get("https://clinigoal-server-side.onrender.com/api/courses");
       setCourses(res.data || []);
     } catch (err) {
       console.error("Error fetching courses:", err);
