@@ -272,9 +272,7 @@ function HomePage() {
               <a href="#" onClick={() => toggleDropdown("about")}>About</a>
               {activeDropdown === "about" && (
                 <div className="dropdown">
-                  <a href="#" onClick={() => setActiveDropdown(null)}>Our Team</a>
-                  <a href="#" onClick={() => setActiveDropdown(null)}>Mission</a>
-                  <a href="#" onClick={() => setActiveDropdown(null)}>History</a>
+                  
                 </div>
               )}
             </div>
@@ -437,7 +435,7 @@ function HomePage() {
                 </div>
                 <h3>{p.title}</h3>
                 <p>{p.description}</p>
-                <button onClick={() => navigate(`/program/${p.id}`)}>Enroll Now</button>
+                
               </div>
             </div>
           ))}
@@ -481,7 +479,7 @@ function HomePage() {
             <div key={b.id} className="blog-card-pattern">
               <h3>{b.title}</h3>
               <p>{b.snippet}</p>
-              <a href={b.link}>Read More →</a>
+              
             </div>
           ))}
         </div>

@@ -63,17 +63,17 @@ export default function CoursePlayer({ course, user }) {
   };
 
   const handleAssignmentSubmit = async () => {
-    await axios.post("https://clinigoal-backend.onrender.com/api/progress/assignment", { userId: user.id, courseId: course._id });
+    await axios.post("http://localhost:5000/api/progress/assignment", { userId: user.id, courseId: course._id });
     setCurrentStep("quiz");
     fetchPaymentAndProgress();
   };
 
   const handleQuizSubmit = async () => {
     const score = parseInt(prompt("Enter your quiz score (0-100):")); // for demo
-    const res = await axios.post("https://clinigoal-backend.onrender.com/api/progress/quiz", { userId: user.id, courseId: course._id, score });
+    const res = await axios.post("http://localhost:5000/api/progress/quiz", { userId: user.id, courseId: course._id, score });
     if (res.data.passed) {
       alert("Quiz Passed! Generating certificate...");
-      const certRes = await axios.post("https://clinigoal-backend.onrender.com/api/progress/certificate", { userId: user.id, courseId: course._id });
+      const certRes = await axios.post("http://localhost:5000/api/progress/certificate", { userId: user.id, courseId: course._id });
       setCertificateUrl(certRes.data.certificateUrl);
       setCurrentStep("certificate");
     } else if (res.data.remainingAttempts > 0) {
@@ -136,4 +136,3 @@ export default function CoursePlayer({ course, user }) {
     </div>
   );
 }
-s

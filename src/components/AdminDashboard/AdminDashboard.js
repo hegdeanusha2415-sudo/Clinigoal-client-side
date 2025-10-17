@@ -1,4 +1,3 @@
-// src/components/AdminDashboard/AdminDashboard.js
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
@@ -24,7 +23,7 @@ function AdminDashboard() {
   // ----------------- FETCH DATA -----------------
   const fetchCourses = async () => {
     try {
-      const res = await axios.get("https://clinigoal-server-side.onrender.com/api/courses");
+      const res = await axios.get("http://localhost:5000/api/courses");
       setCourses(res.data);
     } catch (err) {
       console.error("Error fetching courses:", err);
@@ -33,7 +32,7 @@ function AdminDashboard() {
 
   const fetchUsers = async () => {
     try {
-      const res = await axios.get("https://clinigoal-server-side.onrender.com/api/users");
+      const res = await axios.get("http://localhost:5000/api/users");
       setUsers(res.data);
     } catch (err) {
       console.error("Error fetching users:", err);
@@ -42,11 +41,15 @@ function AdminDashboard() {
 
   const fetchPayments = async () => {
     try {
-      const res = await axios.get("https://clinigoal-server-side.onrender.com/api/payments/all");
+      const res = await axios.get("http://localhost:5000/api/payments/all");
       const paymentsWithDetails = res.data.map((p) => {
         const user = users.find((u) => u._id === p.userId);
         const course = courses.find((c) => c._id === p.courseId);
-        return { ...p, user, course };
+        const dateObj = new Date(p.createdAt);
+        const day = dateObj.toLocaleDateString("en-US", { weekday: "long" });
+        const date = dateObj.toLocaleDateString("en-US");
+        const time = dateObj.toLocaleTimeString("en-US");
+        return { ...p, user, course, day, date, time };
       });
       setPayments(paymentsWithDetails);
     } catch (err) {
@@ -56,7 +59,7 @@ function AdminDashboard() {
 
   const fetchReviews = async () => {
     try {
-      const res = await axios.get("https://clinigoal-server-side.onrender.com/api/reviews");
+      const res = await axios.get("http://localhost:5000/api/reviews");
       setReviews(res.data);
     } catch (err) {
       console.error("Error fetching reviews:", err);
@@ -65,7 +68,7 @@ function AdminDashboard() {
 
   const fetchQuizMarks = async () => {
     try {
-      const res = await axios.get("https://clinigoal-server-side.onrender.com/api/quizmarks");
+      const res = await axios.get("http://localhost:5000/api/quizmarks");
       setQuizMarks(res.data);
     } catch (err) {
       console.error("Error fetching quiz marks:", err);
@@ -74,7 +77,7 @@ function AdminDashboard() {
 
   const fetchCertificates = async () => {
     try {
-      const res = await axios.get("https://clinigoal-server-side.onrender.com/api/certificates");
+      const res = await axios.get("http://localhost:5000/api/certificates");
       setCertificates(res.data);
     } catch (err) {
       console.error("Error fetching certificates:", err);
@@ -103,10 +106,10 @@ function AdminDashboard() {
     if (window.confirm("Do you really want to logout?")) navigate("/");
   };
 
-  // ----------------- APPROVE / REJECT / REVOKE -----------------
+  // ----------------- APPROVE / REJECT / PENDING -----------------
   const handlePaymentAction = async (paymentId, newStatus) => {
     try {
-      await axios.post("https://clinigoal-server-side.onrender.com/api/payments/updateStatus", {
+      await axios.post("http://localhost:5000/api/payments/updateStatus", {
         paymentId,
         status: newStatus,
       });
@@ -144,9 +147,9 @@ function AdminDashboard() {
   return (
     <div className="admin-dashboard">
       {/* Sidebar */}
-      <aside className="sidebar">
+      <aside className="sidebar glass-sidebar">
         <h2 className="sidebar-title">Admin Panel</h2>
-        <p className="online-status">● Online</p>
+        <p className="online-status">🟢 Online</p>
         <ul className="menu">
           {[
             "dashboard", "approval", "payments", "courses", "reviews",
@@ -164,84 +167,86 @@ function AdminDashboard() {
             </li>
           ))}
         </ul>
-        <button className="logout-btn" onClick={handleLogout}>Logout</button>
+        <button className="logout-btn" onClick={handleLogout}>
+          🚪 Logout
+        </button>
       </aside>
 
       {/* Main Content */}
       <main className="dashboard-content">
-        {/* Dashboard */}
+        {/* DASHBOARD TAB */}
         {activeTab === "dashboard" && (
           <div className="content-section">
-            <h1>Welcome Admin 🌟</h1>
+            <h1 className="welcome-title">Welcome Admin 🌟</h1>
             <div className="card-grid">
-              <div className="dash-card blue">
-                <h3>📘 Total Courses</h3>
-                <p>{courses.length}</p>
-              </div>
-              <div className="dash-card green">
-                <h3>💰 Pending Payments</h3>
-                <p>{pendingPaymentsCount}</p>
-              </div>
-              <div className="dash-card orange">
-                <h3>👥 Total Students</h3>
-                <p>{users.length}</p>
-              </div>
-              <div className="dash-card purple">
-                <h3>💬 Reviews Submitted</h3>
-                <p>{reviews.length}</p>
-              </div>
-              <div className="dash-card teal">
-                <h3>📝 Quiz Marks</h3>
-                <p>{quizMarks.length}</p>
-              </div>
-              <div className="dash-card pink">
-                <h3>🏆 Certificates Issued</h3>
-                <p>{certificates.length}</p>
-              </div>
+              {[
+                { title: "📘 Total Courses", value: courses.length, color: "linear-gradient(135deg,#2193b0,#6dd5ed)" },
+                { title: "💰 Pending Payments", value: pendingPaymentsCount, color: "linear-gradient(135deg,#F7971E,#FFD200)" },
+                { title: "👥 Total Students", value: users.length, color: "linear-gradient(135deg,#56ab2f,#a8e063)" },
+                { title: "💬 Reviews Submitted", value: reviews.length, color: "linear-gradient(135deg,#7F00FF,#E100FF)" },
+                { title: "📝 Quiz Marks", value: quizMarks.length, color: "linear-gradient(135deg,#00C9FF,#92FE9D)" },
+                { title: "🏆 Certificates Issued", value: certificates.length, color: "linear-gradient(135deg,#f953c6,#b91d73)" },
+              ].map((card, index) => (
+                <div key={index} className="dash-card modern" style={{ background: card.color }}>
+                  <h3>{card.title}</h3>
+                  <p>{card.value}</p>
+                </div>
+              ))}
             </div>
           </div>
         )}
 
-        {/* Approval */}
+        {/* APPROVAL SECTION */}
         {activeTab === "approval" && (
           <div className="content-section">
             <h2>Pending Payment Approvals</h2>
             {payments.length === 0 ? (
               <p>No payments available.</p>
             ) : (
-              <table className="payment-table">
+              <table className="payment-table modern-table">
                 <thead>
                   <tr>
+                    <th>Payment ID</th>
                     <th>Student</th>
                     <th>Course</th>
                     <th>Amount</th>
                     <th>Status</th>
+                    <th>Day</th>
+                    <th>Date</th>
+                    <th>Time</th>
                     <th>Actions</th>
                   </tr>
                 </thead>
                 <tbody>
                   {payments.map((p) => (
                     <tr key={p._id}>
+                      <td>{p._id}</td>
                       <td>{p.user?.name || "Student"}</td>
                       <td>{p.course?.courseName || "Course"}</td>
                       <td>₹{p.amount}</td>
                       <td>{p.status}</td>
+                      <td>{p.day}</td>
+                      <td>{p.date}</td>
+                      <td>{p.time}</td>
                       <td>
-                        {p.status === "Pending" && (
-                          <>
-                            <button className="approve-btn" onClick={() => handlePaymentAction(p._id, "Approved")}>
-                              Approve
-                            </button>
-                            <button className="reject-btn" onClick={() => handlePaymentAction(p._id, "Rejected")}>
-                              Reject
-                            </button>
-                          </>
-                        )}
-                        {p.status === "Approved" && (
-                          <button className="revoke-btn" onClick={() => handlePaymentAction(p._id, "Pending")}>
-                            Revoke
-                          </button>
-                        )}
+                        <button
+                          className="approve-btn"
+                          onClick={() => handlePaymentAction(p._id, "Approved")}
+                        >
+                          Accept
+                        </button>
+                        <button
+                          className="reject-btn"
+                          onClick={() => handlePaymentAction(p._id, "Rejected")}
+                        >
+                          Reject
+                        </button>
+                        <button
+                          className="pending-btn"
+                          onClick={() => handlePaymentAction(p._id, "Pending")}
+                        >
+                          Pending
+                        </button>
                       </td>
                     </tr>
                   ))}
@@ -251,28 +256,45 @@ function AdminDashboard() {
           </div>
         )}
 
-        {/* Payments */}
+        {/* PAYMENTS SECTION */}
         {activeTab === "payments" && (
           <div className="content-section">
-            <h2>All Payments</h2>
-            <table className="payment-table">
+            <h2>All Payments (With Date & Time)</h2>
+            <table className="payment-table modern-table">
               <thead>
                 <tr>
+                  <th>Payment ID</th>
                   <th>Student</th>
                   <th>Course</th>
                   <th>Amount</th>
                   <th>Status</th>
+                  <th>Day</th>
+                  <th>Date</th>
+                  <th>Time</th>
                 </tr>
               </thead>
               <tbody>
                 {payments.map((p) => (
                   <tr key={p._id}>
+                    <td>{p._id}</td>
                     <td>{p.user?.name || "Student"}</td>
                     <td>{p.course?.courseName || "Course"}</td>
                     <td>₹{p.amount}</td>
-                    <td style={{ color: p.status === "Approved" ? "green" : p.status === "Rejected" ? "red" : "orange" }}>
+                    <td
+                      style={{
+                        color:
+                          p.status === "Approved"
+                            ? "green"
+                            : p.status === "Rejected"
+                            ? "red"
+                            : "orange",
+                      }}
+                    >
                       {p.status}
                     </td>
+                    <td>{p.day}</td>
+                    <td>{p.date}</td>
+                    <td>{p.time}</td>
                   </tr>
                 ))}
               </tbody>
@@ -280,7 +302,7 @@ function AdminDashboard() {
           </div>
         )}
 
-        {/* Courses */}
+        {/* COURSES SECTION */}
         {activeTab === "courses" && (
           <div className="content-section">
             <h2>Courses</h2>
@@ -288,17 +310,21 @@ function AdminDashboard() {
           </div>
         )}
 
-        {/* Reviews */}
+        {/* REVIEWS SECTION */}
         {activeTab === "reviews" && (
           <div className="content-section">
             <h2>Student Reviews</h2>
-            {reviews.length === 0 ? <p>No reviews submitted yet.</p> : (
+            {reviews.length === 0 ? (
+              <p>No reviews submitted yet.</p>
+            ) : (
               reviews.map((r, i) => (
                 <div className="review-item" key={i}>
                   <h4>{r.name}</h4>
                   <div className="rating">
-                    {[1, 2, 3, 4, 5].map(s => (
-                      <span key={s} style={{ color: s <= r.rating ? "#f59e0b" : "#ccc" }}>★</span>
+                    {[1, 2, 3, 4, 5].map((s) => (
+                      <span key={s} style={{ color: s <= r.rating ? "#f59e0b" : "#ccc" }}>
+                        ★
+                      </span>
                     ))}
                   </div>
                   <p>{r.text}</p>
@@ -308,9 +334,9 @@ function AdminDashboard() {
           </div>
         )}
 
-        {/* ✅ Improved Analytics */}
+        {/* ANALYTICS SECTION */}
         {activeTab === "analytics" && (
-          <div className="content-section">
+          <div className="content-section analytics-section">
             <h2>Analytics Dashboard 📊</h2>
             <div className="analytics-grid">
               <div className="analytics-card large">
@@ -350,32 +376,11 @@ function AdminDashboard() {
                   </PieChart>
                 </ResponsiveContainer>
               </div>
-
-              <div className="analytics-card large">
-                <h3>Student Ratings Trend</h3>
-                <ResponsiveContainer width="100%" height={300}>
-                  <AreaChart data={ratingData}>
-                    <defs>
-                      <linearGradient id="colorRating" x1="0" y1="0" x2="0" y2="1">
-                        <stop offset="5%" stopColor="#6f42c1" stopOpacity={0.8} />
-                        <stop offset="95%" stopColor="#6f42c1" stopOpacity={0} />
-                      </linearGradient>
-                    </defs>
-                    <CartesianGrid strokeDasharray="3 3" />
-                    <XAxis dataKey="name" />
-                    <YAxis domain={[0, 5]} />
-                    <Tooltip />
-                    <Legend />
-                    <Area type="monotone" dataKey="rating" stroke="#6f42c1" fillOpacity={1} fill="url(#colorRating)" />
-                    <Line type="monotone" dataKey="rating" stroke="#007bff" strokeWidth={2} dot={{ r: 4 }} />
-                  </AreaChart>
-                </ResponsiveContainer>
-              </div>
             </div>
           </div>
         )}
 
-        {/* Settings */}
+        {/* SETTINGS SECTION */}
         {activeTab === "settings" && (
           <div className="content-section settings-section">
             <h2>Admin Settings ⚙️</h2>
@@ -392,7 +397,9 @@ function AdminDashboard() {
                 <label>Password</label>
                 <input type="password" placeholder="Enter new password" />
               </div>
-              <button type="submit" className="update-btn">Update Settings</button>
+              <button type="submit" className="update-btn">
+                Update Settings
+              </button>
             </form>
           </div>
         )}

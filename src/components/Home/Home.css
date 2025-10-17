@@ -35,13 +35,12 @@ h2 {
    2. Clean Professional Header (Compact) - NAVY BLUE
    =========================== */
 .clean-header {
-  background: linear-gradient(135deg, #0f172a 0%, #1e3a8a 100%); 
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
-  padding: 5px 0; 
+  width: 100%;
+  background: #092666fd;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
   position: sticky;
   top: 0;
-  z-index: 1000;
-  backdrop-filter: blur(5px);
+  z-index: 100;
 }
 
 .header-content {
@@ -58,23 +57,30 @@ h2 {
 .logo {
   display: flex;
   align-items: center;
-  gap: 0.5rem;
-  font-size: 1.4rem;
-  font-weight: bold;
-  color: #ffffff;
-  margin-right: 2rem;
+  font-weight: 700;
+  font-size: 1.5rem;
+  color: #f1f5fc;
 }
 
 .logo-icon {
   font-size: 1.8rem;
-  color: #ffffff;
+  margin-right: 0.5rem;
 }
 
 /* Navigation Styling */
 .main-nav {
   display: flex;
-  gap: 1.5rem;
   align-items: center;
+  gap: 2rem;
+  margin-left: auto;
+}
+
+.main-nav .nav-item a {
+  font-weight: 500;
+  text-decoration: none;
+  color: #f1ebeb;
+  position: relative;
+  transition: color 0.3s ease;
 }
 
 .nav-item {
@@ -92,10 +98,10 @@ h2 {
 }
 
 .nav-item a:hover {
-  background: rgba(255, 255, 255, 0.2);
+  background: rgb(251, 243, 243);
   transform: translateY(-1px);
 }
-
+ 
 /* Hide specific navigation items */
 .nav-item:nth-child(3), 
 .nav-item:nth-child(4) { 
@@ -105,18 +111,26 @@ h2 {
 /* Dropdown Styling */
 .dropdown {
   position: absolute;
-  top: 100%;
-  left: 0;
-  background: white;
-  min-width: 180px;
-  border-radius: 8px;
-  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
-  padding: 0.5rem 0;
-  margin-top: 0.3rem;
-  opacity: 0;
-  visibility: hidden;
-  transform: translateY(-5px);
-  transition: all 0.3s ease;
+  background: #ffffff;
+  box-shadow: 0 6px 20px #fffcfc;
+  border-radius: 0.5rem;
+  padding: 0.75rem 0;
+  top: 2.5rem;
+  z-index: 20;
+}
+
+.dropdown a {
+  display: block;
+  padding: 0.6rem 1.5rem;
+  text-decoration: none;
+  color: #333;
+  font-size: 0.95rem;
+  transition: background 0.3s;
+}
+
+.dropdown a:hover {
+  background: #f5f9ff;
+  color: #0052d4;
 }
 
 .nav-item:hover .dropdown {
@@ -125,17 +139,110 @@ h2 {
   transform: translateY(0);
 }
 
-.dropdown a {
-  display: block;
-  color: #2C3E50 !important;
-  padding: 0.6rem 1rem;
-  font-size: 0.9rem;
+.auth-buttons {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-left: 2rem;
+  position: relative;
 }
 
-.dropdown a:hover {
-  background: #f8f9fa;
-  color: #1e3a8a !important;
-  transform: translateX(3px);
+.login-btn {
+  background: linear-gradient(135deg, #0052d4, #4364f7);
+  color: #fff;
+  border: none;
+  border-radius: 2rem;
+  padding:rem 1.5rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+  box-shadow: 0 4px 15px rgba(67, 100, 247, 0.3);
+}
+
+.login-btn::before {
+  content: "";
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: radial-gradient(circle, rgba(255,255,255,0.3) 10%, transparent 11%);
+  transform: rotate(45deg);
+  opacity: 0;
+  transition: opacity 0.4s ease;
+}
+
+.login-btn:hover::before {
+  opacity: 1;
+}
+
+.login-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 25px rgba(67, 100, 247, 0.4);
+}
+
+/* --- Sign-in Dropdown --- */
+.auth-dropdown {
+  position: absolute;
+  top: 120%;
+  right: 0;
+  background: #ffffff;
+  border-radius: 1rem;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+  padding: 0.75rem 0;
+  display: flex;
+  flex-direction: column;
+  animation: dropdownFade 0.3s ease forwards;
+  overflow: hidden;
+  z-index: 999;
+}
+
+@keyframes dropdownFade {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.auth-dropdown button {
+  background: transparent;
+  border: none;
+  text-align: left;
+  padding: 0.8rem 1.5rem;
+  width: 100%;
+  font-size: 0.95rem;
+  color: #333;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.auth-dropdown button:hover {
+  background: #0a62e5;
+  color: #0052d4;
+}
+
+/* --- CTA Button --- */
+.cta-btn {
+  background: linear-gradient(135deg, #00b4d8, #48cae4);
+  color: #fff;
+  border: none;
+  border-radius: 2rem;
+  padding: 0.6rem 1.6rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 15px rgba(0, 180, 216, 0.3);
+}
+
+.cta-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 25px rgba(0, 180, 216, 0.4);
 }
 
 /* Header Actions */
@@ -1652,3 +1759,28 @@ body {
 .faq-pattern .faq-card-pattern:nth-child(1) { animation-delay: 0.1s; }
 .faq-pattern .faq-card-pattern:nth-child(2) { animation-delay: 0.2s; }
 .faq-pattern .faq-card-pattern:nth-child(3) { animation-delay: 0.3s; }
+
+/* --- Section-specific border colors --- */
+.programs-pattern .program-card-pattern {
+  border-color: #1e3a8a; /* Navy Blue */
+}
+
+.stats-pattern .stat-card-pattern {
+  border-color: #2563eb; /* Bright Blue */
+}
+
+.steps-pattern .step-card-pattern {
+  border-color: #0ea5e9; /* Sky Blue */
+}
+
+.testimonials-pattern .testimonial-card-pattern {
+  border-color: #38bdf8; /* Light Cyan */
+}
+
+.blogs-pattern .blog-card-pattern {
+  border-color: #3b82f6; /* Medium Blue */
+}
+
+.faq-pattern .faq-card-pattern {
+  border-color: #1d4ed8; /* Deep Blue */
+}

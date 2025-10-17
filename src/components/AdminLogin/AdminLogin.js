@@ -5,10 +5,18 @@ import "./AdminLogin.css";
 
 function AdminLogin() {
   const [loginData, setLoginData] = useState({ email: "", password: "" });
-  const [forgotData, setForgotData] = useState({ email: "", otp: "", newPassword: "" });
-  const [forgotStep, setForgotStep] = useState(1); // 1: login, 2: send OTP, 3: verify OTP, 4: reset password
+  const [forgotData, setForgotData] = useState({
+    email: "",
+    otp: "",
+    newPassword: "",
+  });
+  const [forgotStep, setForgotStep] = useState(1);
   const [isCreating, setIsCreating] = useState(false);
-  const [createData, setCreateData] = useState({ email: "", password: "", confirmPassword: "" });
+  const [createData, setCreateData] = useState({
+    email: "",
+    password: "",
+    confirmPassword: "",
+  });
   const [message, setMessage] = useState("");
 
   const navigate = useNavigate();
@@ -33,10 +41,10 @@ function AdminLogin() {
   const handleLoginSubmit = (e) => {
     e.preventDefault();
     if (loginData.email && loginData.password) {
-      alert("Admin logged in!");
+      alert("✅ Admin logged in successfully!");
       setLoginData({ email: "", password: "" });
       navigate("/admin-dashboard");
-    } else alert("Enter valid login details!");
+    } else alert("Please enter valid credentials!");
   };
 
   // ----------------- Create Admin -----------------
@@ -46,7 +54,7 @@ function AdminLogin() {
       alert("Passwords do not match!");
       return;
     }
-    alert(`Admin account created: ${createData.email}`);
+    alert(`Admin account created for: ${createData.email}`);
     setCreateData({ email: "", password: "", confirmPassword: "" });
     setIsCreating(false);
   };
@@ -55,49 +63,58 @@ function AdminLogin() {
   const handleForgotSubmit = async () => {
     try {
       if (forgotStep === 2) {
-        // Send OTP
-        const res = await axios.post("http://localhost:5000/api/admin/forgot-password/send-otp", {
-          email: forgotData.email,
-        });
+        const res = await axios.post(
+          "http://localhost:5000/api/admin/forgot-password/send-otp",
+          { email: forgotData.email }
+        );
         setMessage(res.data.message);
         setForgotStep(3);
       } else if (forgotStep === 3) {
-        // Verify OTP
-        const res = await axios.post("http://localhost:5000/api/admin/forgot-password/verify-otp", {
-          email: forgotData.email,
-          otp: forgotData.otp,
-        });
+        const res = await axios.post(
+          "http://localhost:5000/api/admin/forgot-password/verify-otp",
+          {
+            email: forgotData.email,
+            otp: forgotData.otp,
+          }
+        );
         setMessage(res.data.message);
         setForgotStep(4);
       } else if (forgotStep === 4) {
-        // Reset password
-        const res = await axios.post("http://localhost:5000/api/admin/forgot-password/reset", {
-          email: forgotData.email,
-          newPassword: forgotData.newPassword,
-        });
+        const res = await axios.post(
+          "http://localhost:5000/api/admin/forgot-password/reset",
+          {
+            email: forgotData.email,
+            newPassword: forgotData.newPassword,
+          }
+        );
         setMessage(res.data.message);
         setForgotStep(1);
         setForgotData({ email: "", otp: "", newPassword: "" });
       }
     } catch (err) {
-      setMessage(err.response?.data?.message || "Error");
+      setMessage(err.response?.data?.message || "Error occurred.");
     }
   };
 
   return (
-    <div className="admin-login-page">
+    <div className="admin-login-wrapper">
+      <div className="left-panel">
+        <img
+          src="https://images.pexels.com/photos/7722914/pexels-photo-7722914.jpeg"
+          alt="Clinic illustration"
+          className="login-image"
+        />
+        </div>
+      
+
       <div
-        className={`form-container ${
-          isCreating
-            ? "create-active"
-            : forgotStep > 1
-            ? "forgot-active"
-            : "login-active"
+        className={`admin-login-right ${
+          isCreating ? "show-create" : forgotStep > 1 ? "show-forgot" : ""
         }`}
       >
         {/* ----------------- Login Form ----------------- */}
         {!isCreating && forgotStep === 1 && (
-          <form className="form login-form" onSubmit={handleLoginSubmit}>
+          <form className="login-form" onSubmit={handleLoginSubmit}>
             <h2>Admin Login</h2>
             <input
               type="email"
@@ -116,21 +133,12 @@ function AdminLogin() {
               required
             />
             <button type="submit">Login</button>
-
             <p className="switch-text">
               Forgot password?{" "}
-              <span
-                onClick={() => {
-                  setForgotData({ email: "", otp: "", newPassword: "" });
-                  setForgotStep(2); // ✅ move to forgot password form
-                }}
-              >
-                Click here
-              </span>
+              <span onClick={() => setForgotStep(2)}>Click here</span>
             </p>
-
             <p className="switch-text">
-              Don't have an account?{" "}
+              Don’t have an account?{" "}
               <span onClick={() => setIsCreating(true)}>Create Account</span>
             </p>
           </form>
@@ -138,7 +146,7 @@ function AdminLogin() {
 
         {/* ----------------- Create Account Form ----------------- */}
         {isCreating && (
-          <form className="form create-form" onSubmit={handleCreateSubmit}>
+          <form className="create-form" onSubmit={handleCreateSubmit}>
             <h2>Create Admin Account</h2>
             <input
               type="email"
@@ -167,21 +175,28 @@ function AdminLogin() {
             <button type="submit">Create Account</button>
             <p className="switch-text">
               Already have an account?{" "}
-              <span onClick={() => setIsCreating(false)}>Login</span>
+              <span
+                onClick={() => {
+                  setIsCreating(false);
+                  setForgotStep(1);
+                }}
+              >
+                Login
+              </span>
             </p>
           </form>
         )}
 
         {/* ----------------- Forgot Password Form ----------------- */}
         {!isCreating && forgotStep > 1 && (
-          <div className="form forgot-form">
+          <div className="forgot-form">
             {forgotStep === 2 && (
               <>
                 <h2>Forgot Password</h2>
                 <input
                   type="email"
                   name="email"
-                  placeholder="Admin Email"
+                  placeholder="Enter Email"
                   value={forgotData.email}
                   onChange={handleForgotChange}
                   required
@@ -218,7 +233,7 @@ function AdminLogin() {
               </>
             )}
             <p className="switch-text">
-              Remember your password?{" "}
+              Remember password?{" "}
               <span
                 onClick={() => {
                   setForgotStep(1);
