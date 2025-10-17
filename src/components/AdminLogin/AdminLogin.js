@@ -1,0 +1,239 @@
+import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import axios from "axios";
+import "./AdminLogin.css";
+
+function AdminLogin() {
+  const [loginData, setLoginData] = useState({ email: "", password: "" });
+  const [forgotData, setForgotData] = useState({ email: "", otp: "", newPassword: "" });
+  const [forgotStep, setForgotStep] = useState(1); // 1: login, 2: send OTP, 3: verify OTP, 4: reset password
+  const [isCreating, setIsCreating] = useState(false);
+  const [createData, setCreateData] = useState({ email: "", password: "", confirmPassword: "" });
+  const [message, setMessage] = useState("");
+
+  const navigate = useNavigate();
+
+  // ----------------- Handlers -----------------
+  const handleLoginChange = (e) => {
+    const { name, value } = e.target;
+    setLoginData({ ...loginData, [name]: value });
+  };
+
+  const handleCreateChange = (e) => {
+    const { name, value } = e.target;
+    setCreateData({ ...createData, [name]: value });
+  };
+
+  const handleForgotChange = (e) => {
+    const { name, value } = e.target;
+    setForgotData({ ...forgotData, [name]: value });
+  };
+
+  // ----------------- Login -----------------
+  const handleLoginSubmit = (e) => {
+    e.preventDefault();
+    if (loginData.email && loginData.password) {
+      alert("Admin logged in!");
+      setLoginData({ email: "", password: "" });
+      navigate("/admin-dashboard");
+    } else alert("Enter valid login details!");
+  };
+
+  // ----------------- Create Admin -----------------
+  const handleCreateSubmit = (e) => {
+    e.preventDefault();
+    if (createData.password !== createData.confirmPassword) {
+      alert("Passwords do not match!");
+      return;
+    }
+    alert(`Admin account created: ${createData.email}`);
+    setCreateData({ email: "", password: "", confirmPassword: "" });
+    setIsCreating(false);
+  };
+
+  // ----------------- Forgot Password OTP Flow -----------------
+  const handleForgotSubmit = async () => {
+    try {
+      if (forgotStep === 2) {
+        // Send OTP
+        const res = await axios.post("http://localhost:5000/api/admin/forgot-password/send-otp", {
+          email: forgotData.email,
+        });
+        setMessage(res.data.message);
+        setForgotStep(3);
+      } else if (forgotStep === 3) {
+        // Verify OTP
+        const res = await axios.post("http://localhost:5000/api/admin/forgot-password/verify-otp", {
+          email: forgotData.email,
+          otp: forgotData.otp,
+        });
+        setMessage(res.data.message);
+        setForgotStep(4);
+      } else if (forgotStep === 4) {
+        // Reset password
+        const res = await axios.post("http://localhost:5000/api/admin/forgot-password/reset", {
+          email: forgotData.email,
+          newPassword: forgotData.newPassword,
+        });
+        setMessage(res.data.message);
+        setForgotStep(1);
+        setForgotData({ email: "", otp: "", newPassword: "" });
+      }
+    } catch (err) {
+      setMessage(err.response?.data?.message || "Error");
+    }
+  };
+
+  return (
+    <div className="admin-login-page">
+      <div
+        className={`form-container ${
+          isCreating
+            ? "create-active"
+            : forgotStep > 1
+            ? "forgot-active"
+            : "login-active"
+        }`}
+      >
+        {/* ----------------- Login Form ----------------- */}
+        {!isCreating && forgotStep === 1 && (
+          <form className="form login-form" onSubmit={handleLoginSubmit}>
+            <h2>Admin Login</h2>
+            <input
+              type="email"
+              name="email"
+              placeholder="Admin Email"
+              value={loginData.email}
+              onChange={handleLoginChange}
+              required
+            />
+            <input
+              type="password"
+              name="password"
+              placeholder="Password"
+              value={loginData.password}
+              onChange={handleLoginChange}
+              required
+            />
+            <button type="submit">Login</button>
+
+            <p className="switch-text">
+              Forgot password?{" "}
+              <span
+                onClick={() => {
+                  setForgotData({ email: "", otp: "", newPassword: "" });
+                  setForgotStep(2); // ✅ move to forgot password form
+                }}
+              >
+                Click here
+              </span>
+            </p>
+
+            <p className="switch-text">
+              Don't have an account?{" "}
+              <span onClick={() => setIsCreating(true)}>Create Account</span>
+            </p>
+          </form>
+        )}
+
+        {/* ----------------- Create Account Form ----------------- */}
+        {isCreating && (
+          <form className="form create-form" onSubmit={handleCreateSubmit}>
+            <h2>Create Admin Account</h2>
+            <input
+              type="email"
+              name="email"
+              placeholder="Admin Email"
+              value={createData.email}
+              onChange={handleCreateChange}
+              required
+            />
+            <input
+              type="password"
+              name="password"
+              placeholder="Password"
+              value={createData.password}
+              onChange={handleCreateChange}
+              required
+            />
+            <input
+              type="password"
+              name="confirmPassword"
+              placeholder="Confirm Password"
+              value={createData.confirmPassword}
+              onChange={handleCreateChange}
+              required
+            />
+            <button type="submit">Create Account</button>
+            <p className="switch-text">
+              Already have an account?{" "}
+              <span onClick={() => setIsCreating(false)}>Login</span>
+            </p>
+          </form>
+        )}
+
+        {/* ----------------- Forgot Password Form ----------------- */}
+        {!isCreating && forgotStep > 1 && (
+          <div className="form forgot-form">
+            {forgotStep === 2 && (
+              <>
+                <h2>Forgot Password</h2>
+                <input
+                  type="email"
+                  name="email"
+                  placeholder="Admin Email"
+                  value={forgotData.email}
+                  onChange={handleForgotChange}
+                  required
+                />
+                <button onClick={handleForgotSubmit}>Send OTP</button>
+              </>
+            )}
+            {forgotStep === 3 && (
+              <>
+                <h2>Verify OTP</h2>
+                <input
+                  type="number"
+                  name="otp"
+                  placeholder="Enter OTP"
+                  value={forgotData.otp}
+                  onChange={handleForgotChange}
+                  required
+                />
+                <button onClick={handleForgotSubmit}>Verify OTP</button>
+              </>
+            )}
+            {forgotStep === 4 && (
+              <>
+                <h2>Set New Password</h2>
+                <input
+                  type="password"
+                  name="newPassword"
+                  placeholder="New Password"
+                  value={forgotData.newPassword}
+                  onChange={handleForgotChange}
+                  required
+                />
+                <button onClick={handleForgotSubmit}>Reset Password</button>
+              </>
+            )}
+            <p className="switch-text">
+              Remember your password?{" "}
+              <span
+                onClick={() => {
+                  setForgotStep(1);
+                  setMessage("");
+                }}
+              >
+                Login
+              </span>
+            </p>
+            {message && <p className="info-message">{message}</p>}
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
+
+export default AdminLogin;
