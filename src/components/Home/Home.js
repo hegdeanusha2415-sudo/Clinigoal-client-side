@@ -63,7 +63,7 @@ function HomePage() {
       } 
     });
   };
-
+  
   const clearSearchAndNavigate = (path) => {
     setSearchQuery("");
     setSearchResults([]);

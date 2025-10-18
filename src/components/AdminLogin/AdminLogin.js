@@ -1,9 +1,11 @@
+// src/pages/AdminLogin.js
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import "./AdminLogin.css";
 
 function AdminLogin() {
+  // ----------------- State Management -----------------
   const [loginData, setLoginData] = useState({ email: "", password: "" });
   const [forgotData, setForgotData] = useState({
     email: "",
@@ -21,10 +23,8 @@ function AdminLogin() {
 
   const navigate = useNavigate();
 
-  // ✅ Base API URL (configurable for dev/prod)
-  const API_BASE_URL =
-    import.meta.env.VITE_API_BASE_URL ||
-    "https://clinigoal-backend.onrender.com/api";
+  // ✅ Base API URL for local server (port 5000)
+  const API_BASE_URL = "http://localhost:5000/api";
 
   // ----------------- Handlers -----------------
   const handleLoginChange = (e) => {
@@ -125,8 +125,10 @@ function AdminLogin() {
     }
   };
 
+  // ----------------- JSX UI -----------------
   return (
     <div className="admin-login-wrapper">
+      {/* LEFT PANEL (IMAGE) */}
       <div className="left-panel">
         <img
           src="https://images.pexels.com/photos/7722914/pexels-photo-7722914.jpeg"
@@ -135,12 +137,13 @@ function AdminLogin() {
         />
       </div>
 
+      {/* RIGHT PANEL (FORMS) */}
       <div
         className={`admin-login-right ${
           isCreating ? "show-create" : forgotStep > 1 ? "show-forgot" : ""
         }`}
       >
-        {/* ----------------- Login Form ----------------- */}
+        {/* ----------------- LOGIN FORM ----------------- */}
         {!isCreating && forgotStep === 1 && (
           <form className="login-form" onSubmit={handleLoginSubmit}>
             <h2>Admin Login</h2>
@@ -172,7 +175,7 @@ function AdminLogin() {
           </form>
         )}
 
-        {/* ----------------- Create Account Form ----------------- */}
+        {/* ----------------- CREATE ACCOUNT FORM ----------------- */}
         {isCreating && (
           <form className="create-form" onSubmit={handleCreateSubmit}>
             <h2>Create Admin Account</h2>
@@ -215,7 +218,7 @@ function AdminLogin() {
           </form>
         )}
 
-        {/* ----------------- Forgot Password Form ----------------- */}
+        {/* ----------------- FORGOT PASSWORD FLOW ----------------- */}
         {!isCreating && forgotStep > 1 && (
           <div className="forgot-form">
             {forgotStep === 2 && (

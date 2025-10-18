@@ -10,7 +10,7 @@ export default function CoursePlayer({ course, user }) {
   const [loading, setLoading] = useState(true);
 
   // ✅ Base API URL (auto-switches between local and production)
-  const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "https://clinigoal-backend.onrender.com/api";
+  const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "https://clinigoal-backend.onrender.com";
 
   useEffect(() => {
     fetchPaymentAndProgress();

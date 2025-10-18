@@ -1,79 +1,38 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate, Link } from "react-router-dom";
+import axios from "axios";
 import "./ClinicalResearchPage.css";
 
 const ClinicalResearchPage = () => {
   const navigate = useNavigate();
   const [isVisible, setIsVisible] = useState(false);
-  const [activeFeature, setActiveFeature] = useState(0);
+  const [course, setCourse] = useState(null); // 🔄 will come from API
+
+  const API_BASE_URL = "http://localhost:5000"; // ✅ local backend
 
   useEffect(() => {
     setTimeout(() => setIsVisible(true), 200);
+
+    // Fetch course details from backend
+    const fetchCourse = async () => {
+      try {
+        const res = await axios.get(`${API_BASE_URL}/api/courses/clinical-research`);
+        setCourse(res.data);
+      } catch (error) {
+        console.error("Error fetching course data:", error);
+      }
+    };
+
+    fetchCourse();
   }, []);
 
   const handleEnroll = () => {
     navigate("/payment/clinical-research");
   };
 
-  const course = {
-    title: "Clinical Research Excellence Program",
-    subtitle:
-      "Master Clinical Trials, Regulatory Affairs, and Real-World Research Methodology",
-    description:
-      "Learn the science, strategy, and operations behind global clinical trials. This program empowers you to design, manage, and analyze clinical studies with full regulatory and ethical compliance.",
-    duration: "6 Months",
-    level: "Advanced",
-    price: "₹45,999",
-    originalPrice: "₹59,999",
-    discount: "23% off",
-    rating: "4.8",
-    students: "1250+",
-    features: [
-      {
-        icon: "🎯",
-        title: "Industry-Aligned",
-        description:
-          "Curriculum designed with top pharmaceutical companies",
-      },
-      {
-        icon: "👨‍🏫",
-        title: "Expert Mentors",
-        description: "Learn from industry leaders with 15+ years experience",
-      },
-      {
-        icon: "💼",
-        title: "Career Support",
-        description: "100% placement assistance with top CROs",
-      },
-      {
-        icon: "🌍",
-        title: "Global Recognition",
-        description: "Certificate recognized internationally",
-      },
-    ],
-    stats: [
-      { number: "98%", label: "Placement Rate" },
-      { number: "50+", label: "Hiring Partners" },
-      { number: "1200+", label: "Alumni Network" },
-      { number: "₹8L", label: "Average CTC" },
-    ],
-    curriculum: [
-      "Clinical Trial Design & Protocol Development",
-      "Regulatory Affairs & Good Clinical Practice",
-      "Pharmacovigilance & Drug Safety Monitoring",
-      "Clinical Data Management & Biostatistics",
-      "Ethical Guidelines & Patient Safety",
-      "Capstone Project & Industry Internship",
-    ],
-    instructor: {
-      name: "Dr. Priya Sharma",
-      title: "Ex-Director, Apollo Hospitals | 15+ Years Experience",
-      bio: "Led 120+ international clinical trials and trained 2000+ professionals in clinical research methodology.",
-      image:
-        "https://images.unsplash.com/photo-1559839734-2b71ea197ec2?w=400&q=80",
-    },
-    companies: ["Novartis", "Pfizer", "IQVIA", "Syneos Health", "Parexel", "Apollo"],
-  };
+  if (!course) {
+    return <div className="loading">Loading course details...</div>;
+  }
 
   return (
     <div className={`clinical-page ${isVisible ? "visible" : ""}`}>
@@ -90,18 +49,9 @@ const ClinicalResearchPage = () => {
           <p className="hero-subtitle">{course.subtitle}</p>
 
           <div className="hero-stats">
-            <div className="stat-pill">
-              <span className="stat-icon">⭐</span>
-              <span>{course.rating}/5 Rating</span>
-            </div>
-            <div className="stat-pill">
-              <span className="stat-icon">👥</span>
-              <span>{course.students} Enrolled</span>
-            </div>
-            <div className="stat-pill">
-              <span className="stat-icon">📅</span>
-              <span>{course.duration}</span>
-            </div>
+            <div className="stat-pill">⭐ {course.rating}/5 Rating</div>
+            <div className="stat-pill">👥 {course.students} Enrolled</div>
+            <div className="stat-pill">📅 {course.duration}</div>
           </div>
 
           <div className="pricing-section">
@@ -115,13 +65,9 @@ const ClinicalResearchPage = () => {
 
           <div className="hero-actions">
             <button className="cta-button primary" onClick={handleEnroll}>
-              <span className="btn-icon">🚀</span>
-              Enroll Now & Start Learning
+              🚀 Enroll Now & Start Learning
             </button>
-            <button className="cta-button secondary">
-              <span className="btn-icon">📋</span>
-              Download Brochure
-            </button>
+            <button className="cta-button secondary">📋 Download Brochure</button>
           </div>
         </div>
       </section>
@@ -134,10 +80,7 @@ const ClinicalResearchPage = () => {
         </div>
         <div className="features-grid">
           {course.features.map((feature, index) => (
-            <div
-              key={index}
-              className={`feature-item animate-up delay-${index}`}
-            >
+            <div key={index} className={`feature-item animate-up delay-${index}`}>
               <div className="feature-icon">{feature.icon}</div>
               <h3>{feature.title}</h3>
               <p>{feature.description}</p>
@@ -146,14 +89,11 @@ const ClinicalResearchPage = () => {
         </div>
       </section>
 
-      {/* STATS BANNER */}
+      {/* STATS */}
       <section className="stats-banner">
         <div className="stats-container">
           {course.stats.map((stat, index) => (
-            <div
-              key={index}
-              className={`stat-item animate-up delay-${index}`}
-            >
+            <div key={index} className="stat-item animate-up delay-${index}">
               <div className="stat-number">{stat.number}</div>
               <div className="stat-label">{stat.label}</div>
             </div>
@@ -161,15 +101,15 @@ const ClinicalResearchPage = () => {
         </div>
       </section>
 
-      {/* CURRICULUM SECTION */}
+      {/* CURRICULUM */}
       <section className="curriculum-section">
         <div className="section-header">
           <h2>What You'll Master</h2>
-          <p>Comprehensive 6-month curriculum with hands-on projects</p>
+          <p>Comprehensive curriculum with hands-on projects</p>
         </div>
         <div className="curriculum-list">
           {course.curriculum.map((item, index) => (
-            <div key={index} className="curriculum-item animate-left delay-${index}">
+            <div key={index} className={`curriculum-item animate-left delay-${index}`}>
               <div className="item-number">0{index + 1}</div>
               <div className="item-content">
                 <h3>{item}</h3>
@@ -180,7 +120,7 @@ const ClinicalResearchPage = () => {
         </div>
       </section>
 
-      {/* INSTRUCTOR SECTION */}
+      {/* INSTRUCTOR */}
       <section className="instructor-section">
         <div className="instructor-container animate-up">
           <div className="instructor-image">
@@ -203,7 +143,7 @@ const ClinicalResearchPage = () => {
         </div>
       </section>
 
-      {/* HIRING COMPANIES */}
+      {/* COMPANIES */}
       <section className="companies-section">
         <h3>Our Alumni Work At</h3>
         <div className="companies-grid">
@@ -227,8 +167,7 @@ const ClinicalResearchPage = () => {
             <div className="feature">✅ Lifetime Access</div>
           </div>
           <button className="cta-button large" onClick={handleEnroll}>
-            <span className="btn-icon">🎓</span>
-            Enroll Now at {course.price}
+            🎓 Enroll Now at {course.price}
             <span className="original-price">{course.originalPrice}</span>
           </button>
           <p className="cta-note">Limited seats available • Next batch starting soon</p>
