@@ -21,9 +21,9 @@ function AdminLogin() {
 
   const navigate = useNavigate();
 
-  // ✅ Fixed API Base URL to point to your Render backend
+  // ✅ Fixed base URL for Create React App (CRA)
   const API_BASE_URL =
-    import.meta.env.VITE_API_BASE_URL ||
+    process.env.REACT_APP_API_BASE_URL ||
     "https://clinigoal-server-side.onrender.com/api";
 
   // ----------------- Handlers -----------------
