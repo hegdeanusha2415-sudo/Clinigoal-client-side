@@ -3,6 +3,8 @@ import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import CoursePlayer from "../CoursePlayer";
 import "./UserDashboard.css";
+import API_BASE_URL from "../../apiConfig";
+
 
 function UserDashboard({ user }) {
   const navigate = useNavigate();

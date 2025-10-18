@@ -2,7 +2,8 @@ import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import AdminCourseManagement from "../AdminCourseManagement";
-import API_BASE_URL from "./apiConfig"; // ✅ Added centralized config import
+import API_BASE_URL from "../../apiConfig";
+// ✅ Added centralized config import
 
 import {
   BarChart, Bar, XAxis, YAxis, Tooltip, Legend,
