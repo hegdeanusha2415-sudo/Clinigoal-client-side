@@ -21,7 +21,7 @@ function AdminLogin() {
 
   const navigate = useNavigate();
 
-  // ✅ Fixed base URL for Create React App (CRA)
+  // ✅ Fixed Environment Variable for Create React App
   const API_BASE_URL =
     process.env.REACT_APP_API_BASE_URL ||
     "https://clinigoal-server-side.onrender.com/api";
@@ -46,10 +46,13 @@ function AdminLogin() {
   const handleLoginSubmit = async (e) => {
     e.preventDefault();
     try {
-      if (!loginData.email || !loginData.password)
-        return alert("Please enter valid credentials!");
+      if (!loginData.email || !loginData.password) {
+        alert("Please enter valid credentials!");
+        return;
+      }
 
-      // ✅ Call login API
+      console.log("🔗 Logging in via:", `${API_BASE_URL}/admin/login`);
+
       const res = await axios.post(`${API_BASE_URL}/admin/login`, loginData);
       alert("✅ Admin logged in successfully!");
       console.log("Login response:", res.data);
@@ -57,6 +60,7 @@ function AdminLogin() {
       setLoginData({ email: "", password: "" });
       navigate("/admin-dashboard");
     } catch (error) {
+      console.error("Login error:", error);
       alert(error.response?.data?.message || "Login failed. Try again.");
     }
   };
@@ -69,7 +73,8 @@ function AdminLogin() {
       return;
     }
     try {
-      // ✅ Call admin registration API
+      console.log("🔗 Registering admin via:", `${API_BASE_URL}/admin/register`);
+
       const res = await axios.post(`${API_BASE_URL}/admin/register`, {
         email: createData.email,
         password: createData.password,
@@ -81,15 +86,19 @@ function AdminLogin() {
       setCreateData({ email: "", password: "", confirmPassword: "" });
       setIsCreating(false);
     } catch (err) {
+      console.error("Register error:", err);
       alert(err.response?.data?.message || "Error creating admin account.");
     }
   };
 
-  // ----------------- Forgot Password OTP Flow -----------------
+  // ----------------- Forgot Password Flow -----------------
   const handleForgotSubmit = async () => {
     try {
       if (forgotStep === 2) {
-        // ✅ Step 1: Send OTP
+        console.log(
+          "🔗 Sending OTP via:",
+          `${API_BASE_URL}/admin/forgot-password/send-otp`
+        );
         const res = await axios.post(
           `${API_BASE_URL}/admin/forgot-password/send-otp`,
           { email: forgotData.email }
@@ -97,7 +106,10 @@ function AdminLogin() {
         setMessage(res.data.message);
         setForgotStep(3);
       } else if (forgotStep === 3) {
-        // ✅ Step 2: Verify OTP
+        console.log(
+          "🔗 Verifying OTP via:",
+          `${API_BASE_URL}/admin/forgot-password/verify-otp`
+        );
         const res = await axios.post(
           `${API_BASE_URL}/admin/forgot-password/verify-otp`,
           {
@@ -108,7 +120,10 @@ function AdminLogin() {
         setMessage(res.data.message);
         setForgotStep(4);
       } else if (forgotStep === 4) {
-        // ✅ Step 3: Reset Password
+        console.log(
+          "🔗 Resetting password via:",
+          `${API_BASE_URL}/admin/forgot-password/reset`
+        );
         const res = await axios.post(
           `${API_BASE_URL}/admin/forgot-password/reset`,
           {
@@ -121,6 +136,7 @@ function AdminLogin() {
         setForgotData({ email: "", otp: "", newPassword: "" });
       }
     } catch (err) {
+      console.error("Forgot password error:", err);
       setMessage(err.response?.data?.message || "Error occurred.");
     }
   };
