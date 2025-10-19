@@ -1,0 +1,571 @@
+/* src/pages/AdminLogin.css */
+
+body, html {
+  margin: 0;
+  padding: 0;
+  font-family: 'Arial', sans-serif;
+}
+
+.admin-login-page {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  background: linear-gradient(to right, #001f3f, #0074D9, #001f3f);
+}
+
+.form-container {
+  width: 350px;
+  perspective: 1000px;
+  position: relative;
+}
+
+.form {
+  position: absolute;
+  width: 100%;
+  background: #f0f8ff;
+  padding: 40px 30px;
+  border-radius: 12px;
+  box-shadow: 0 8px 20px rgba(0,0,0,0.2);
+  backface-visibility: hidden;
+  transform-style: preserve-3d;
+  transition: transform 0.8s;
+}
+
+.form h2 {
+  text-align: center;
+  margin-bottom: 25px;
+  color: #001f3f;
+}
+
+.form input {
+  width: 100%;
+  padding: 12px;
+  margin-bottom: 15px;
+  border-radius: 8px;
+  border: 1px solid #0074D9;
+  font-size: 1rem;
+}
+
+.form input:focus {
+  outline: none;
+  border-color: #001f3f;
+}
+
+.form button {
+  width: 100%;
+  padding: 12px;
+  border: none;
+  border-radius: 8px;
+  background: #001f3f;
+  color: white;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background 0.3s;
+}
+
+.form button:hover {
+  background: #0074D9;
+}
+
+.switch-text {
+  text-align: center;
+  margin-top: 15px;
+  font-size: 0.9rem;
+  color: #001f3f;
+}
+
+.switch-text span {
+  color: #0074D9;
+  cursor: pointer;
+  font-weight: 600;
+}
+
+.switch-text span:hover {
+  text-decoration: underline;
+}
+
+/* Flip animation */
+.login-active .login-form {
+  transform: rotateY(0deg);
+  z-index: 2;
+}
+
+.login-active .forgot-form {
+  transform: rotateY(180deg);
+  z-index: 1;
+}
+
+.forgot-active .forgot-form {
+  transform: rotateY(0deg);
+  z-index: 2;
+}
+
+.forgot-active .login-form {
+  transform: rotateY(180deg);
+  z-index: 1;
+}
+
+/* Reset & Base */
+body, html {
+  margin: 0;
+  padding: 0;
+  font-family: 'Poppins', sans-serif;
+  background: linear-gradient(to right, #001f3f, #0074D9, #001f3f);
+  height: 100%;
+}
+
+/* Main Wrapper */
+.admin-login-page {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+}
+
+/* -------------- Form Container -------------- */
+.form-container {
+  width: 380px;
+  height: 460px; /* fixed height prevents page jump */
+  perspective: 1000px;
+  position: relative;
+  transition: transform 0.8s ease;
+}
+
+/* -------------- Form Base Styles -------------- */
+.form {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  background: #f0f8ff;
+  padding: 40px 30px;
+  border-radius: 16px;
+  box-shadow: 0 8px 25px rgba(0,0,0,0.25);
+  backface-visibility: hidden;
+  transform-style: preserve-3d;
+  transition: transform 0.8s ease;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+/* -------------- Headings -------------- */
+.form h2 {
+  text-align: center;
+  margin-bottom: 25px;
+  color: #001f3f;
+  letter-spacing: 0.5px;
+}
+
+/* -------------- Inputs -------------- */
+.form input {
+  width: 100%;
+  padding: 12px;
+  margin-bottom: 15px;
+  border-radius: 8px;
+  border: 1px solid #0074D9;
+  font-size: 1rem;
+  transition: all 0.3s ease;
+}
+
+.form input:focus {
+  outline: none;
+  border-color: #001f3f;
+  box-shadow: 0 0 5px rgba(0, 31, 63, 0.3);
+}
+
+/* -------------- Buttons -------------- */
+.form button {
+  width: 100%;
+  padding: 12px;
+  border: none;
+  border-radius: 8px;
+  background: #001f3f;
+  color: white;
+  font-size: 1rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.form button:hover {
+  background: #0074D9;
+  transform: scale(1.03);
+}
+
+/* -------------- Switch Text -------------- */
+.switch-text {
+  text-align: center;
+  margin-top: 15px;
+  font-size: 0.9rem;
+  color: #001f3f;
+}
+
+.switch-text span {
+  color: #0074D9;
+  cursor: pointer;
+  font-weight: 600;
+  transition: all 0.2s ease;
+}
+
+.switch-text span:hover {
+  text-decoration: underline;
+  color: #005fa3;
+}
+
+/* -------------- Info Message -------------- */
+.info-message {
+  text-align: center;
+  color: #0074D9;
+  font-weight: 500;
+  margin-top: 10px;
+}
+
+/* -------------- Flip Animations -------------- */
+.login-active .login-form {
+  transform: rotateY(0deg);
+  z-index: 2;
+}
+
+.login-active .forgot-form,
+.login-active .create-form {
+  transform: rotateY(180deg);
+  z-index: 1;
+}
+
+.forgot-active .forgot-form {
+  transform: rotateY(0deg);
+  z-index: 2;
+}
+
+.forgot-active .login-form,
+.forgot-active .create-form {
+  transform: rotateY(180deg);
+  z-index: 1;
+}
+
+.create-active .create-form {
+  transform: rotateY(0deg);
+  z-index: 2;
+}
+
+.create-active .login-form,
+.create-active .forgot-form {
+  transform: rotateY(180deg);
+  z-index: 1;
+}
+
+/* -------------- Responsive -------------- */
+@media (max-width: 450px) {
+  .form-container {
+    width: 90%;
+    height: auto;
+  }
+
+  .form {
+    padding: 30px 20px;
+  }
+
+  .form h2 {
+    font-size: 1.3rem;
+  }
+}
+
+/* Background */
+.admin-login-page {
+  position: relative;
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, #2b5876, #4e4376);
+  font-family: "Poppins", sans-serif;
+  color: #fff;
+  overflow: hidden;
+}
+
+.overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 100%;
+  width: 100%;
+  background: radial-gradient(circle at top left, rgba(255,255,255,0.15), transparent 70%);
+  pointer-events: none;
+}
+
+/* Form Container */
+.form-container {
+  position: relative;
+  z-index: 2;
+  width: 380px;
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(14px);
+  border-radius: 18px;
+  padding: 40px;
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+  animation: fadeIn 0.8s ease;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: scale(0.9); }
+  to { opacity: 1; transform: scale(1); }
+}
+
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.form-title {
+  text-align: center;
+  font-size: 1.6rem;
+  color: #fff;
+}
+
+.form-subtitle {
+  text-align: center;
+  color: #ddd;
+  font-size: 0.9rem;
+  margin-bottom: 15px;
+}
+
+input {
+  padding: 12px 15px;
+  border: none;
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.2);
+  color: #fff;
+  outline: none;
+  transition: background 0.3s;
+}
+
+input:focus {
+  background: rgba(255, 255, 255, 0.3);
+}
+
+.primary-btn {
+  background: linear-gradient(45deg, #ff512f, #dd2476);
+  border: none;
+  color: #fff;
+  padding: 12px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 600;
+  transition: all 0.3s;
+}
+
+.primary-btn:hover {
+  background: linear-gradient(45deg, #dd2476, #ff512f);
+  transform: translateY(-2px);
+}
+
+.switch-text {
+  text-align: center;
+  font-size: 0.9rem;
+  color: #eee;
+}
+
+.switch-text span {
+  color: #ffcc70;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.switch-text span:hover {
+  text-decoration: underline;
+}
+
+.info-message {
+  text-align: center;
+  color: #ffd166;
+  margin-top: 10px;
+  font-size: 0.9rem;
+}
+
+/* Wrapper Layout */
+.admin-login-wrapper {
+  display: flex;
+  height: 100vh;
+  width: 100%;
+  font-family: "Poppins", sans-serif;
+  overflow: hidden;
+  background: #f9fafb;
+}
+
+/* Left Side */
+.admin-login-left {
+  flex: 1;
+  background: url("https://images.unsplash.com/photo-1522204508034-5b5c9b82f7f5?auto=format&fit=crop&w=1200&q=80")
+    center/cover no-repeat;
+  color: #000; /* Black text */
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 80px;
+  position: relative;
+}
+
+.admin-login-left::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: rgba(255, 255, 255, 0.4); /* light overlay for readability */
+}
+
+.admin-login-left h1 {
+  font-size: 2.8rem;
+  font-weight: 700;
+  margin-bottom: 20px;
+  color: #000;
+  text-shadow: none;
+  position: relative;
+  z-index: 1;
+}
+
+.admin-login-left p {
+  font-size: 1.2rem;
+  max-width: 400px;
+  line-height: 1.6;
+  color: #000;
+  position: relative;
+  z-index: 1;
+}
+
+/* Right Side Form Panel */
+.admin-login-right {
+  flex: 1;
+  background: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.6s ease;
+  position: relative;
+  perspective: 1200px;
+  color: #000;
+}
+
+.admin-login-right form,
+.admin-login-right .forgot-form {
+  background: #fff;
+  width: 380px;
+  padding: 40px;
+  border-radius: 16px;
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+  animation: fadeIn 0.6s ease;
+  color: #000;
+}
+
+.admin-login-right h2 {
+  text-align: center;
+  margin-bottom: 25px;
+  font-weight: 600;
+  color: #000;
+}
+
+.admin-login-right input {
+  width: 100%;
+  padding: 12px 14px;
+  margin-bottom: 16px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  font-size: 15px;
+  transition: all 0.3s ease;
+  color: #000;
+  background: #fff;
+}
+
+.admin-login-right input::placeholder {
+  color: #555;
+}
+
+.admin-login-right input:focus {
+  border-color: #2563eb;
+  outline: none;
+  box-shadow: 0 0 5px rgba(37, 99, 235, 0.4);
+}
+
+/* Buttons */
+.admin-login-right button {
+  width: 100%;
+  background: #2563eb;
+  color: #fff;
+  padding: 12px;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 16px;
+  transition: 0.3s;
+}
+
+.admin-login-right button:hover {
+  background: #1e3a8a;
+}
+
+/* Text Links */
+.switch-text {
+  text-align: center;
+  font-size: 0.9rem;
+  margin-top: 10px;
+  color: #000;
+}
+
+.switch-text span {
+  color: #2563eb;
+  font-weight: 600;
+  cursor: pointer;
+  transition: color 0.3s ease;
+}
+
+.switch-text span:hover {
+  color: #1e3a8a;
+}
+
+.info-message {
+  text-align: center;
+  color: #16a34a;
+  margin-top: 10px;
+  font-weight: 500;
+}
+
+/* Flip Animation */
+.admin-login-right.show-create form.login-form,
+.admin-login-right.show-forgot form.login-form {
+  transform: rotateY(180deg);
+  opacity: 0;
+}
+
+.admin-login-right.show-create .create-form,
+.admin-login-right.show-forgot .forgot-form {
+  transform: rotateY(0deg);
+  opacity: 1;
+}
+
+/* Animation */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(15px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Responsive Design */
+@media (max-width: 900px) {
+  .admin-login-wrapper {
+    flex-direction: column;
+  }
+
+  .admin-login-left {
+    display: none;
+  }
+
+  .admin-login-right {
+    flex: none;
+    height: 100vh;
+  }
+}
